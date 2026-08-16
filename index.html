@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WONJAE CHOI — Project Manager</title>
+<meta name="description" content="최원재 — 대형 아웃도어 행사 기획·운영 PM 포트폴리오. 문제를 파악하고, 해결책을 제시하고, 결과를 만듭니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --overlay-base:.30;
+    --overlay-focus:.70;
+    --white:#fff;
+    --dim:rgba(255,255,255,.72);
+    --dimmer:rgba(255,255,255,.5);
+    --pill:rgba(20,20,20,.55);
+    --card:#111214;
+    --card-border:rgba(255,255,255,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:#0a0a0a;color:var(--white);overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    word-break:keep-all;overflow-wrap:break-word;
+  }
+
+  /* ── 1. 프로젝트 영상 영역 (가장 아래 레이어) ───────────────── */
+  #video-layer{position:fixed;inset:0;z-index:0;overflow:hidden;background:#0a0a0a}
+  #video-layer iframe{
+    position:absolute;top:50%;left:50%;
+    width:100vw;height:56.25vw;              /* 16:9 cover */
+    min-height:100vh;min-width:177.78vh;
+    transform:translate(-50%,-50%);
+    pointer-events:none;border:0;
+    transition:opacity .6s ease;
+  }
+  #video-layer.no-video iframe{opacity:0}
+  #video-layer video{
+    position:absolute;top:50%;left:50%;
+    width:100vw;height:56.25vw;
+    min-height:100vh;min-width:177.78vh;
+    transform:translate(-50%,-50%);
+    object-fit:cover;display:none;
+  }
+
+  /* 오퍼시티 30% → (창 열릴 때) 70% */
+  #dark-overlay{
+    position:fixed;inset:0;z-index:1;background:#000;
+    opacity:var(--overlay-base);
+    transition:opacity .5s ease;pointer-events:none;
+  }
+  body.focus-mode #dark-overlay{opacity:var(--overlay-focus)}
+
+  /* ── 상단 바 ──────────────────────────────────────────────── */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:26px 34px;
+  }
+  /* 3. 이름 영역 */
+  #brand{
+    font-size:15px;font-weight:600;letter-spacing:.14em;
+    color:var(--dim);text-transform:uppercase;cursor:default;user-select:none;
+  }
+  /* 5. 세부 항목 영역 */
+  nav#site-nav{display:flex;gap:26px}
+  nav#site-nav button{
+    background:none;border:0;cursor:pointer;
+    font:inherit;font-size:12.5px;font-weight:600;letter-spacing:.16em;
+    color:var(--dimmer);text-transform:uppercase;padding:4px 0;
+    transition:color .25s;
+  }
+  nav#site-nav button:hover{color:var(--white)}
+
+  /* 4. 단계 영역 — 버튼만 만들어 두고 숨김 */
+  #category-bar{
+    position:fixed;top:96px;left:50%;transform:translateX(-50%);z-index:10;
+    display:flex;gap:4px;padding:6px;border-radius:999px;
+    background:var(--pill);backdrop-filter:blur(12px);
+    visibility:hidden;                        /* ← 일단 숨김. 필요 시 이 줄만 제거 */
+  }
+  #category-bar button{
+    background:none;border:0;cursor:pointer;font:inherit;
+    font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--dimmer);padding:8px 18px;border-radius:999px;transition:.25s;
+  }
+  #category-bar button.active,#category-bar button:hover{color:var(--white);background:rgba(255,255,255,.12)}
+
+  /* ── 1-1 ~ 1-4. 프로젝트 정보 블록 ────────────────────────── */
+  #project-info{
+    position:fixed;left:6vw;top:50%;transform:translateY(-50%);
+    z-index:5;max-width:520px;
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  #project-info.switching{opacity:0;transform:translateY(calc(-50% + 14px))}
+  #project-title{
+    font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.01em;
+    line-height:1.12;margin-bottom:18px;
+    text-shadow:0 2px 24px rgba(0,0,0,.45);
+  }
+  #project-desc{
+    font-size:15.5px;line-height:1.65;color:var(--dim);
+    margin-bottom:26px;max-width:440px;
+    text-shadow:0 1px 12px rgba(0,0,0,.5);
+  }
+  #project-result .label{
+    font-size:14px;font-weight:800;letter-spacing:.04em;margin-bottom:4px;
+  }
+  #project-result .sub{
+    font-size:13px;color:var(--dimmer);letter-spacing:.03em;line-height:1.55;
+  }
+  #btn-problem{
+    margin-top:30px;display:inline-flex;align-items:center;gap:8px;
+    background:rgba(30,30,30,.62);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    color:var(--white);font:inherit;font-size:12.5px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;
+    padding:13px 26px;cursor:pointer;transition:.25s;
+  }
+  #btn-problem:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3)}
+  #project-info.placeholder #btn-problem{display:none}
+  .coming-soon-tag{
+    display:inline-block;margin-top:26px;
+    font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dimmer);border:1px dashed rgba(255,255,255,.3);
+    border-radius:999px;padding:10px 22px;
+  }
+
+  /* ── 6. 연도 영역 (행사 일정 타임라인) ─────────────────────── */
+  #timeline{
+    position:fixed;bottom:34px;left:50%;transform:translateX(-50%);z-index:10;
+    display:flex;align-items:center;gap:10px;
+    background:var(--pill);backdrop-filter:blur(12px);
+    border-radius:999px;padding:10px 16px;max-width:92vw;overflow-x:auto;
+    scrollbar-width:none;
+  }
+  #timeline::-webkit-scrollbar{display:none}
+  #timeline .tl-arrow{
+    flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+    background:rgba(255,255,255,.08);border:0;color:var(--dim);cursor:pointer;
+    font-size:14px;line-height:1;transition:.25s;
+  }
+  #timeline .tl-arrow:hover{background:rgba(255,255,255,.2);color:#fff}
+  #timeline .tl-year{
+    flex:0 0 auto;font-size:12px;font-weight:700;letter-spacing:.1em;
+    color:var(--dimmer);padding:0 4px;user-select:none;
+  }
+  #timeline .tl-dot{
+    flex:0 0 auto;width:7px;height:7px;border-radius:50%;
+    background:rgba(255,255,255,.32);border:0;cursor:pointer;padding:0;
+    transition:transform .2s, background .2s;
+  }
+  #timeline .tl-dot:hover{background:rgba(255,255,255,.75);transform:scale(1.5)}
+  /* 경력기술서에 크게 서술된 대형 행사 — 하이라이트 */
+  #timeline .tl-dot.major{
+    width:10px;height:10px;background:rgba(255,255,255,.9);
+    box-shadow:0 0 0 3px rgba(255,255,255,.16), 0 0 10px rgba(255,255,255,.35);
+  }
+  #timeline .tl-dot.active{background:#fff;transform:scale(1.65);box-shadow:0 0 0 4px rgba(255,255,255,.15)}
+
+  /* ── 모달 공통 ────────────────────────────────────────────── */
+  .modal{
+    position:fixed;inset:0;z-index:20;display:none;
+    align-items:center;justify-content:center;padding:4vh 4vw;
+  }
+  .modal.open{display:flex}
+  .modal .modal-box{
+    animation:pop .35s cubic-bezier(.2,.9,.3,1.2);
+    box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+  .btn-close{
+    width:34px;height:34px;border-radius:50%;flex:0 0 auto;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+    color:#ddd;font-size:15px;line-height:1;cursor:pointer;transition:.25s;
+  }
+  .btn-close:hover{background:rgba(255,255,255,.22);color:#fff}
+
+  /* ── 2. 문제와 해결책 창 ──────────────────────────────────── */
+  #modal-problem .modal-box{
+    width:min(1080px,100%);max-height:88vh;display:flex;flex-direction:column;
+    background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;
+  }
+  #modal-problem .mp-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 24px;border-bottom:1px solid var(--card-border);
+  }
+  #modal-problem .mp-header h2{font-size:16px;font-weight:800;letter-spacing:.03em}
+  #modal-problem .mp-header .mp-badge{
+    font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--dimmer);
+    text-transform:uppercase;margin-right:14px;
+  }
+  #modal-problem .mp-body{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:0;overflow:auto;
+  }
+  /* 좌측 — 솔루션 이미지 */
+  .mp-visual{
+    background:#0c0d0f;border-right:1px solid var(--card-border);
+    display:flex;align-items:center;justify-content:center;min-height:380px;padding:28px;
+  }
+  .mp-visual .img-placeholder{
+    width:100%;height:100%;min-height:320px;border:1.5px dashed rgba(255,255,255,.18);
+    border-radius:12px;display:flex;flex-direction:column;gap:10px;
+    align-items:center;justify-content:center;color:var(--dimmer);
+    font-size:13px;letter-spacing:.06em;
+  }
+  .mp-visual .img-placeholder svg{opacity:.4}
+  /* 우측 — 문제/해결책/결과 텍스트 */
+  .mp-text{padding:30px 30px 36px;overflow:auto}
+  .mp-text section+section{margin-top:26px}
+  .mp-text h3{
+    font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--dimmer);margin-bottom:9px;
+  }
+  .mp-text h3 span{color:#fff}
+  .mp-text p{font-size:14.5px;line-height:1.75;color:rgba(255,255,255,.88)}
+  .mp-text strong{color:#fff;font-weight:700}
+
+  /* ── ABOUT / CONNECT 카드 ─────────────────────────────────── */
+  .card-modal .modal-box{
+    width:min(560px,100%);max-height:88vh;overflow:auto;
+    background:var(--card);border:1px solid var(--card-border);border-radius:18px;
+    padding:44px 46px 40px;position:relative;text-align:center;
+  }
+  .card-modal .btn-close{position:absolute;top:18px;right:18px}
+  .avatar{
+    width:96px;height:96px;border-radius:50%;margin:0 auto 18px;
+    border:1.5px dashed rgba(255,255,255,.25);background:rgba(255,255,255,.04);
+    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);
+  }
+  .card-modal h2{
+    font-size:22px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;
+    line-height:1.4;margin-bottom:4px;
+  }
+  .card-modal .role{
+    font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--dimmer);margin-bottom:24px;
+  }
+  .card-modal .bio{text-align:left;font-size:14px;line-height:1.75;color:rgba(255,255,255,.85)}
+  .card-modal .bio p+p{margin-top:13px}
+  .card-modal .bio strong{color:#fff}
+  .card-modal .meta-line{
+    margin-top:22px;padding-top:18px;border-top:1px solid var(--card-border);
+    font-size:12.5px;color:var(--dimmer);line-height:1.7;text-align:left;
+  }
+
+  /* CONNECT 버튼들 */
+  .connect-btns{display:flex;justify-content:center;gap:18px;margin-top:6px}
+  .connect-btns a,.connect-btns button{
+    width:52px;height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;
+    color:#eee;cursor:pointer;transition:.25s;text-decoration:none;
+  }
+  .connect-btns a:hover,.connect-btns button:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+  #phone-reveal{
+    margin-top:20px;font-size:15px;letter-spacing:.08em;color:#fff;
+    min-height:22px;opacity:0;transition:opacity .3s;
+  }
+  #phone-reveal.show{opacity:1}
+  #phone-reveal small{display:block;font-size:11px;color:var(--dimmer);letter-spacing:.14em;margin-top:4px}
+
+  /* ── RESUME 모달 ──────────────────────────────────────────── */
+  #modal-resume .modal-box{
+    width:min(900px,100%);max-height:90vh;display:flex;flex-direction:column;
+    background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;
+  }
+  #modal-resume .rs-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;border-bottom:1px solid var(--card-border);
+  }
+  #modal-resume .rs-header h2{font-size:16px;font-weight:800}
+  .rs-actions{display:flex;gap:10px;align-items:center}
+  .btn-pdf{
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+    border-radius:999px;color:#fff;font:inherit;font-size:12px;font-weight:700;
+    letter-spacing:.08em;padding:9px 18px;cursor:pointer;text-decoration:none;transition:.25s;
+  }
+  .btn-pdf:hover{background:rgba(255,255,255,.22)}
+  .rs-body{overflow:auto;padding:36px 44px;background:#0d0e10}
+  .rs-body h1{font-size:21px;font-weight:800;margin-bottom:6px}
+  .rs-body .rs-contact{font-size:12.5px;color:var(--dimmer);line-height:1.8;margin-bottom:28px}
+  .rs-body h2{
+    font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    color:#fff;border-bottom:1px solid var(--card-border);
+    padding-bottom:8px;margin:30px 0 14px;
+  }
+  .rs-body h3{font-size:15px;font-weight:800;margin:20px 0 3px}
+  .rs-body .rs-sub{font-size:12.5px;color:var(--dimmer);margin-bottom:8px}
+  .rs-body p,.rs-body li{font-size:13.5px;line-height:1.75;color:rgba(255,255,255,.85)}
+  .rs-body ul{padding-left:18px;margin:6px 0 10px}
+  .rs-body li+li{margin-top:5px}
+  .rs-body strong{color:#fff}
+
+  /* 토스트 */
+  #toast{
+    position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(10px);
+    z-index:40;background:rgba(255,255,255,.95);color:#111;
+    font-size:13px;font-weight:700;letter-spacing:.04em;
+    padding:11px 22px;border-radius:999px;opacity:0;pointer-events:none;
+    transition:opacity .3s, transform .3s;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* 반응형 */
+  @media (max-width:820px){
+    #project-info{left:7vw;right:7vw;max-width:none}
+    #modal-problem .mp-body{grid-template-columns:1fr}
+    .mp-visual{border-right:0;border-bottom:1px solid var(--card-border);min-height:240px}
+    .mp-visual .img-placeholder{min-height:190px}
+    header{padding:20px 22px}
+    nav#site-nav{gap:16px}
+    .rs-body{padding:26px 22px}
+    .card-modal .modal-box{padding:38px 26px 34px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. 프로젝트 영상 영역 — 가장 아래 레이어 -->
+<div id="video-layer">
+  <iframe id="bg-video"
+    src="https://www.youtube.com/embed/L07F4GjIcGY?autoplay=1&mute=1&controls=0&loop=1&playlist=L07F4GjIcGY&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1"
+    title="project background video"
+    allow="autoplay; encrypted-media"
+    allowfullscreen></iframe>
+  <!-- 로컬 검수용 영상 (같은 폴더의 videos/ 안에 원본 mp4가 있으면 유튜브 대신 이걸 재생) -->
+  <video id="bg-local" muted loop playsinline autoplay></video>
+</div>
+<div id="dark-overlay"></div>
+
+<header>
+  <!-- 3. 이름 영역 -->
+  <div id="brand">Wonjae Choi</div>
+  <!-- 5. 세부 항목 영역 -->
+  <nav id="site-nav">
+    <button data-open="modal-about">About</button>
+    <button data-open="modal-resume">Resume</button>
+    <button data-open="modal-connect">Connect</button>
+  </nav>
+</header>
+
+<!-- 4. 단계 영역 — 형태만 만들어 두고 숨김 (visibility:hidden) -->
+<div id="category-bar" aria-hidden="true">
+  <button class="active">Trail</button>
+  <button>Snow</button>
+  <button>Road</button>
+  <button>Camp</button>
+  <button>Press</button>
+</div>
+
+<!-- 1-1 제목 · 1-2 R&R/상세 · 1-3 성과 · 1-4 버튼 -->
+<main id="project-info">
+  <h1 id="project-title"></h1>
+  <p id="project-desc"></p>
+  <div id="project-result">
+    <div class="label"></div>
+    <div class="sub"></div>
+  </div>
+  <button id="btn-problem" data-open="modal-problem">문제와 해결책</button>
+  <span class="coming-soon-tag" style="display:none">상세 콘텐츠 준비 중</span>
+</main>
+
+<!-- 6. 연도 영역 — 행사 일정 타임라인 -->
+<div id="timeline"></div>
+
+<!-- 2. 문제와 해결책 창 -->
+<div class="modal" id="modal-problem">
+  <div class="modal-box">
+    <div class="mp-header">
+      <h2 id="mp-title">2025 다이나핏 태백 트레일</h2>
+      <div style="display:flex;align-items:center">
+        <span class="mp-badge">Problem &amp; Solution</span>
+        <button class="btn-close" data-close>&#10005;</button>
+      </div>
+    </div>
+    <div class="mp-body">
+      <div class="mp-visual">
+        <div class="img-placeholder">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="m21 15-5-5L5 21"/>
+          </svg>
+          솔루션 이미지 준비 중
+        </div>
+      </div>
+      <div class="mp-text">
+        <section>
+          <h3><span>Problem</span> — 문제</h3>
+          <p>회사의 급성장으로 최대 <strong>4개의 대형 프로젝트가 동시 진행</strong>되는 상황. 인력 증원 없이 기존의 비정형화된 업무 방식으로는 준비 과정의 <strong>업무 누락과 일정 지연 리스크</strong>가 갈수록 커지고 있었다.</p>
+        </section>
+        <section>
+          <h3><span>Solution</span> — 해결책</h3>
+          <p>전 대회의 공통 필수 일정을 추출해 <strong>'일괄 대회 준비 시스템 &amp; 통합 스케줄러'</strong>를 직접 기획·도입. 동시에 행사 조직을 <strong>설치 / 물자 / 스태프 / 디자인 4개 파트로 구조화</strong>하고 파트별 R&amp;R을 수립해 비정형 업무를 체계로 전환했다.</p>
+        </section>
+        <section>
+          <h3><span>Result</span> — 결과</h3>
+          <p>중복 준비 과정 통합으로 <strong>프로젝트별 리드타임 단축</strong>, 업무 누락 리스크 최소화. 참가자 <strong>3,300명(전년 대비 +50%)</strong>·스태프 150명 규모의 대회를 지연·사고 없이 완주했고, 이 시스템 역량을 바탕으로 <strong>차기 대회 타겟을 4,200명으로 상향</strong>하는 데 기여했다.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5-1. ABOUT -->
+<div class="modal card-modal" id="modal-about">
+  <div class="modal-box">
+    <button class="btn-close" data-close>&#10005;</button>
+    <div class="avatar"><!-- 프로필 사진 자리 (준비 중) -->
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+      </svg>
+    </div>
+    <h2>Wonjae<br>Choi</h2>
+    <div class="role">Project Manager</div>
+    <div class="bio">
+      <p>최원재는 국내 최대 규모 트레일 러닝 행사 기획·운영사 <strong>에코라인</strong>에서 PM으로 일하며, 몽벨·다이나핏·코오롱 등 브랜드 협업 행사를 포함한 <strong>총 10개 대회, 누적 참가자 12,500명+</strong>의 프로젝트를 이끌었다.</p>
+      <p>소수 정예 조직의 한계를 시스템으로 극복하는 것이 그의 방식이다. 자체 준비 시스템과 통합 스케줄러를 직접 기획·도입해 <strong>최대 4개의 대형 프로젝트를 딜레이 없이 동시 운영</strong>했고, <strong>참가자 3,300명 규모</strong> 대회의 현장을 총괄했다.</p>
+      <p>해외 생산업체·글로벌 브랜드와의 다이렉트 소싱과 스폰서십 커뮤니케이션, Cafe24·아임웹 기반 이커머스 운영, 디자인·미디어 외주 디렉팅까지 — <strong>문제를 파악하고, 해결책을 설계하고, 결과를 만드는 일</strong>을 한다.</p>
+    </div>
+    <div class="meta-line">
+      학력 · 국립공주대학교 영상학과 학사 (2023.03 졸업)<br>
+      어학 · 영어 비즈니스 레벨 / 일어 회화<br>
+      툴 · Figma · Photoshop · Illustrator · Premiere Pro · Cafe24 · 아임웹 · Gemini · Genspark
+    </div>
+  </div>
+</div>
+
+<!-- 5-2. RESUME -->
+<div class="modal" id="modal-resume">
+  <div class="modal-box">
+    <div class="rs-header">
+      <h2>Resume — 이력서 및 경력기술서</h2>
+      <div class="rs-actions">
+        <a class="btn-pdf" href="경력기술서_최원재.pdf" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+          PDF 다운로드
+        </a>
+        <button class="btn-close" data-close>&#10005;</button>
+      </div>
+    </div>
+    <div class="rs-body">
+      <h1>최원재 <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em">WONJAE CHOI</span></h1>
+      <div class="rs-contact">
+        Phone 010-2245-7638 · Email qbxlzbxlgksl@naver.com<br>
+        국립공주대학교 영상학과 4년제 학사 졸업 (2023.03)
+      </div>
+
+      <h2>핵심 역량 요약</h2>
+      <ul>
+        <li><strong>프로세스 시스템화 및 다중 프로젝트 통제</strong> — 자체 준비 시스템을 직접 기획·도입해 최대 <strong>4개</strong>의 대형 아웃도어 프로젝트를 딜레이 없이 동시 준비, 최대 <strong>3,300명</strong> 규모 대회 현장 총괄</li>
+        <li><strong>해외 다이렉트 소싱 및 글로벌 파트너십</strong> — 해외 생산업체·글로벌 브랜드와 직접 소통하며 물자 소싱, 물류 납기 관리, 스폰서십 유치 전 과정 주도</li>
+        <li><strong>이커머스 플랫폼 운영 및 외주 파트 디렉팅</strong> — Cafe24·아임웹으로 누적 <strong>12,500명+</strong> 참가자 DB·트래픽 통제, 디자인·미디어 외주의 타임라인과 산출물 퀄리티 관리</li>
+        <li><strong>AI·디자인 툴 기반의 실무형 PMO 역량</strong> — AI 툴(Gemini·Genspark) 기반 기획 문서 자동화, 포토샵·피그마·프리미어 실무 이해로 소통 비용 단축</li>
+      </ul>
+
+      <h2>경력 상세 — 에코라인 (Ecoline) · 2024.03 ~ 2026.07</h2>
+      <p style="margin-bottom:4px">국내 최대 규모 트레일 러닝 행사 기획·운영 사업체 · <strong>기획 및 운영 / PM</strong></p>
+
+      <h3>2025 다이나핏 태백 트레일 기획 및 운영</h3>
+      <div class="rs-sub">2025.06 ~ 2025.09 · 참가자 3,300명 (전년 대비 50% 증가) · 현장 스태프 약 150명</div>
+      <ul>
+        <li><strong>통합 프로세스 구축</strong> — 전 대회 공통 필수 일정을 추출해 '일괄 대회 준비 시스템 및 통합 스케줄러' 기획·도입, 리드타임 단축과 업무 누락 리스크 최소화</li>
+        <li><strong>조직 체계화 및 R&amp;R 수립</strong> — 비정형 업무 방식을 개편, 설치/물자/스태프/디자인 4개 파트로 구조화 및 동시 관리</li>
+        <li><strong>비즈니스 확장 기반 마련</strong> — 운영 성과와 시스템화 역량을 바탕으로 차기 대회 타겟 규모를 4,200명 수준으로 상향하는 데 기여</li>
+      </ul>
+
+      <h3>코리아 스노우 트레일 기획 및 운영</h3>
+      <div class="rs-sub">2025.09 ~ 2026.01 · 참가자 1,500명</div>
+      <ul>
+        <li><strong>글로벌 브랜드 협업 주도</strong> — 중국 현지 파트너사 및 중국 3M과 다이렉트 커뮤니케이션 전담, 3M 본사 인력의 현장 부스 운영 성사 및 참가자 전원(1,500명) 리워드 협찬 유치</li>
+        <li><strong>해외 물자 직접 소싱·물류 총괄</strong> — 메달·의류·레이스 물품을 해외 생산업체와 직접 컨택해 조달, 견적 비교→단가 협상→발주→납기 관리→현장 수령까지 전 과정 총괄</li>
+        <li><strong>파트너십 파이프라인 확장</strong> — 3M 연속 후원 논의 및 전체 대회 스케줄에 대한 해외 업체 스폰서십 논의 확대 기여</li>
+      </ul>
+
+      <h3>다중 트레일러닝 프로젝트 상시 기획/운영 및 백오피스 총괄</h3>
+      <div class="rs-sub">2024.03 ~ 2026.07 · 총 10개 대회 · 누적 참가자 약 12,500명</div>
+      <ul>
+        <li><strong>다중 프로젝트 타임라인 동시 관리</strong> — 몽벨·다이나핏·코오롱 등 브랜드 협업 및 자체 행사 10개 대회를 연중 공백 없이 연속 운영, 최대 4개 중첩 시즌에도 무지연 완수</li>
+        <li><strong>이커머스 세팅 및 참가자 DB 관리</strong> — Cafe24·아임웹 페이지 디자인·인터페이스 적용, 티켓 상품 등록·재고 관리 직접 수행</li>
+        <li><strong>비주얼 디렉팅 및 미디어 외주 총괄</strong> — 시각 제작물 기획 의도 수립과 퀄리티 관리, 사진/영상팀 발굴·견적 협상·투입 배분·타임라인 매니징</li>
+      </ul>
+
+      <h2>연간 프로젝트 운영 포트폴리오</h2>
+      <ul>
+        <li><strong>2024</strong> — 몽벨 씨투 써밋 (100명) · 제1회 다이나핏 태백 트레일 (2,100명) · 제1회 태백 소셜 하이킹 (1,000명)</li>
+        <li><strong>2025</strong> — 제1회 코리아 스노우 트레일 (800명) · 제2회 다이나핏 태백 트레일 (3,300명) · 제1회 베어트레일캠프 (300명) · 제1회 레전드 트레일 (1,000명)</li>
+        <li><strong>2026</strong> — 제2회 코리아 스노우 트레일 (1,000명) · 제1회 코오롱 트레일 런 (1,700명) · 제1회 코리아 나이트 런 (1,500명)</li>
+      </ul>
+
+      <h2>보유 스킬 및 활용 툴</h2>
+      <ul>
+        <li><strong>어학</strong> — 영어 비즈니스 레벨 (영문 문서·이메일 능통) · 일어 회화</li>
+        <li><strong>AI·자동화</strong> — Gemini (리서치·문서 초안·커뮤니케이션 정리) · Genspark (제안서·기획서 PPT 초안 자동 생성)</li>
+        <li><strong>업무·데이터</strong> — MS Office / Google Workspace (대규모 DB 핸들링, 예산 관리, WBS 문서화)</li>
+        <li><strong>디자인·미디어</strong> — Figma (웹 기획·와이어프레임) · Photoshop / Illustrator (디렉팅 및 2차 수정) · Premiere Pro (숏폼·홍보 영상 편집)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 5-3. CONNECT -->
+<div class="modal card-modal" id="modal-connect">
+  <div class="modal-box">
+    <button class="btn-close" data-close>&#10005;</button>
+    <div class="avatar">
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+      </svg>
+    </div>
+    <h2>Wonjae<br>Choi</h2>
+    <div class="role">Project Manager</div>
+    <div class="connect-btns">
+      <!-- ① 유선연락처 -->
+      <button id="btn-phone" title="유선연락처" aria-label="전화번호 복사">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.9.7a2 2 0 0 1 1.6 2z"/>
+        </svg>
+      </button>
+      <!-- ② 인스타그램 -->
+      <a href="https://www.instagram.com/1_jay_choi/" target="_blank" rel="noopener" title="Instagram">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <!-- ③ 이메일 -->
+      <a href="mailto:qbxlzbxlgksl@naver.com" title="Email">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7L22 7"/>
+        </svg>
+      </a>
+    </div>
+    <div id="phone-reveal">010-2245-7638<small>클립보드에 복사되었습니다</small></div>
+  </div>
+</div>
+
+<div id="toast">복사되었습니다</div>
+
+<script>
+/* ── 프로젝트 데이터 ──────────────────────────────────────────
+   초안: 다이나핏 태백 트레일만 콘텐츠 있음, 나머지는 칸(placeholder)만 */
+/* 정렬: 최신(2026)이 왼쪽 · major:true = 경력기술서에 크게 서술된 대형 행사(하이라이트) */
+const PROJECTS = [
+  { year:2026, name:"제1회 코리아 나이트 런", period:"2026.04 – 2026.07", scale:"참가자 1,500명" },
+  { year:2026, name:"제1회 코오롱 트레일 런", period:"2026.01 – 2026.04", scale:"참가자 1,700명" },
+  { year:2026, name:"제2회 코리아 스노우 트레일", period:"2025.11 – 2026.01", scale:"참가자 1,000명", major:true },
+  { year:2025, name:"제1회 레전드 트레일", period:"2025.08 – 2025.11", scale:"참가자 1,000명" },
+  { year:2025, name:"제1회 베어트레일캠프", period:"2025.07 – 2025.10", scale:"참가자 300명" },
+  { year:2025, name:"2025 다이나핏 태백 트레일", period:"2025.06 – 2025.09", scale:"참가자 3,300명",
+    major:true, ready:true,
+    video:"L07F4GjIcGY",
+    localVideo:"videos/dynafit-taebaek-2025.mp4",
+    desc:"국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
+    resultLabel:"참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
+    resultSub:"통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반"
+  },
+  { year:2025, name:"제1회 코리아 스노우 트레일", period:"2024.11 – 2025.01", scale:"참가자 800명" },
+  { year:2024, name:"제1회 태백 소셜 하이킹", period:"2024.09 – 2024.11", scale:"참가자 1,000명" },
+  { year:2024, name:"제1회 다이나핏 태백 트레일", period:"2024.04 – 2024.09", scale:"참가자 2,100명" },
+  { year:2024, name:"몽벨 씨투 써밋", period:"2024.03 – 2024.06", scale:"참가자 약 100명" },
+];
+let current = PROJECTS.findIndex(p=>p.ready);
+
+/* ── 연도 타임라인 렌더 ── */
+const tl = document.getElementById("timeline");
+function buildTimeline(){
+  tl.innerHTML = "";
+  const prev = document.createElement("button");
+  prev.className="tl-arrow"; prev.innerHTML="&#8249;";
+  prev.onclick=()=>select((current-1+PROJECTS.length)%PROJECTS.length);
+  tl.appendChild(prev);
+  let lastYear=null;
+  PROJECTS.forEach((p,i)=>{
+    if(p.year!==lastYear){
+      const y=document.createElement("span");
+      y.className="tl-year"; y.textContent=p.year;
+      tl.appendChild(y); lastYear=p.year;
+    }
+    const d=document.createElement("button");
+    d.className="tl-dot"+(p.major?" major":"")+(i===current?" active":"");
+    d.title=p.name; d.onclick=()=>select(i);
+    tl.appendChild(d);
+  });
+  const next=document.createElement("button");
+  next.className="tl-arrow"; next.innerHTML="&#8250;";
+  next.onclick=()=>select((current+1)%PROJECTS.length);
+  tl.appendChild(next);
+}
+
+/* ── 프로젝트 표시 ── */
+const info=document.getElementById("project-info");
+const titleEl=document.getElementById("project-title");
+const descEl=document.getElementById("project-desc");
+const resLabel=document.querySelector("#project-result .label");
+const resSub=document.querySelector("#project-result .sub");
+const comingTag=document.querySelector(".coming-soon-tag");
+const videoLayer=document.getElementById("video-layer");
+const localV=document.getElementById("bg-local");
+
+/* 배경 영상: 같은 폴더에 로컬 mp4가 있으면 그걸 재생(로컬 검수용),
+   없으면 유튜브 임베드 사용(배포 후 정상 재생) */
+function setVideo(p){
+  localV.style.display="none";
+  localV.onerror=null; localV.oncanplay=null;
+  localV.removeAttribute("src"); localV.load();
+  if(p.ready && p.localVideo){
+    localV.oncanplay=()=>{ localV.style.display="block"; localV.play().catch(()=>{}); };
+    localV.onerror=()=>{ localV.style.display="none"; };   /* 파일 없으면 유튜브로 폴백 */
+    localV.src=p.localVideo;
+  }
+}
+
+function render(){
+  const p=PROJECTS[current];
+  titleEl.textContent=p.name;
+  if(p.ready){
+    info.classList.remove("placeholder");
+    descEl.textContent=p.desc;
+    resLabel.textContent=p.resultLabel;
+    resSub.textContent=p.resultSub;
+    comingTag.style.display="none";
+    videoLayer.classList.remove("no-video");
+    document.getElementById("mp-title").textContent=p.name;
+  }else{
+    info.classList.add("placeholder");
+    descEl.textContent=p.period+" · "+p.scale;
+    resLabel.textContent="";
+    resSub.textContent="";
+    comingTag.style.display="inline-block";
+    videoLayer.classList.add("no-video");   /* 영상 미업로드 → 어두운 배경 */
+  }
+  setVideo(p);
+  buildTimeline();
+}
+function select(i){
+  if(i===current) return;
+  info.classList.add("switching");
+  setTimeout(()=>{ current=i; render(); info.classList.remove("switching"); },300);
+}
+
+/* ── 모달 열기/닫기 (오버레이 30% → 70%) ── */
+function openModal(id){
+  document.getElementById(id).classList.add("open");
+  document.body.classList.add("focus-mode");
+}
+function closeModals(){
+  document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));
+  document.body.classList.remove("focus-mode");
+  const pr=document.getElementById("phone-reveal");
+  if(pr) pr.classList.remove("show");
+}
+document.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>openModal(b.dataset.open)));
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeModals));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{ if(e.target===m) closeModals(); }));
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModals(); });
+
+/* ── 유선연락처: 출력 + 클립보드 복사 ── */
+const PHONE="010-2245-7638";
+document.getElementById("btn-phone").addEventListener("click",async()=>{
+  document.getElementById("phone-reveal").classList.add("show");
+  try{
+    await navigator.clipboard.writeText(PHONE);
+  }catch(_){
+    const t=document.createElement("textarea");
+    t.value=PHONE;document.body.appendChild(t);t.select();
+    document.execCommand("copy");t.remove();
+  }
+  const toast=document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),1800);
+});
+
+render();
+</script>
+</body>
+</html>
