@@ -106,17 +106,16 @@
   }
   /* R&R */
   #project-rnr{display:flex;gap:11px;align-items:baseline;margin-bottom:20px}
-  #project-rnr .rnr-label{
+  .rnr-label{
     flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:.18em;
     color:var(--dimmer);border:1px solid rgba(255,255,255,.28);
     border-radius:4px;padding:2.5px 8px;
   }
   #project-rnr .rnr-text{
     font-size:14px;font-weight:600;letter-spacing:.02em;
-    color:rgba(255,255,255,.92);line-height:1.5;
-    text-shadow:0 1px 10px rgba(0,0,0,.5);
+    color:#fff;line-height:1.5;                /* 흰색 · 오퍼시티 100% */
+    text-shadow:0 1px 12px rgba(0,0,0,.65);
   }
-  #project-info.placeholder #project-rnr .rnr-text{color:var(--dimmer);font-weight:500}
   #project-title{
     font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.01em;
     line-height:1.12;margin-bottom:18px;
@@ -127,6 +126,7 @@
     margin-bottom:26px;max-width:440px;
     text-shadow:0 1px 12px rgba(0,0,0,.5);
   }
+  #project-result{display:flex;gap:11px;align-items:baseline}
   #project-result .label{
     font-size:14px;font-weight:800;letter-spacing:.04em;margin-bottom:4px;
   }
@@ -223,9 +223,22 @@
     display:flex;flex-direction:column;align-items:stretch;justify-content:center;
     gap:10px;min-height:380px;padding:20px;
   }
+  .mp-visual .asset-tabs{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap}
+  .mp-visual .asset-tabs button{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;color:var(--dimmer);font:inherit;font-size:11px;font-weight:700;
+    letter-spacing:.05em;padding:6px 13px;cursor:pointer;transition:.2s;
+  }
+  .mp-visual .asset-tabs button:hover{color:#fff}
+  .mp-visual .asset-tabs button.on{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3)}
+  .mp-visual .asset-body{flex:1;min-height:430px;display:flex;overflow:hidden}
   .mp-visual iframe.sched{
-    width:100%;flex:1;min-height:430px;border:0;border-radius:10px;
+    width:100%;height:100%;min-height:430px;border:0;border-radius:10px;
     background:#101114;box-shadow:0 6px 30px rgba(0,0,0,.4);
+  }
+  .mp-visual img.asset{
+    width:100%;height:100%;min-height:0;object-fit:contain;
+    border-radius:10px;background:#0a0b0d;
   }
   .mp-visual .sched-cap{
     flex:0 0 auto;font-size:11.5px;letter-spacing:.05em;
@@ -463,8 +476,11 @@
   </div>
   <p id="project-desc" data-edit="desc"></p>
   <div id="project-result">
-    <div class="label" data-edit="resultLabel"></div>
-    <div class="sub" data-edit="resultSub"></div>
+    <span class="rnr-label">성과</span>
+    <div class="result-body">
+      <div class="label" data-edit="resultLabel"></div>
+      <div class="sub" data-edit="resultSub"></div>
+    </div>
   </div>
   <button id="btn-problem" data-open="modal-problem">문제와 해결책</button>
   <span class="coming-soon-tag" style="display:none">상세 콘텐츠 준비 중</span>
@@ -648,44 +664,179 @@
      정렬: 최신(2026)이 왼쪽 · major = 하이라이트 · ready = 상세 콘텐츠 완성 · video = 유튜브 ID -->
 <script id="projects-data" type="application/json">
 [
-  { "year":2026, "region":"태백", "title":"코리아 나이트 런", "period":"2026.04 – 2026.07", "scale":"참가자 1,500명",
-    "rnr":"기획·운영 PM / 참가자 모집·이커머스 세팅·백오피스 총괄",
-    "video":"tTOfsoADDao", "localVideo":"videos/korea-night-run-2026.mp4" },
-  { "year":2026, "region":"횡성", "title":"코오롱 트레일 런", "period":"2026.01 – 2026.04", "scale":"참가자 1,700명",
-    "rnr":"기획·운영 PM / 브랜드 협업 커뮤니케이션·참가자 모집 총괄",
-    "video":"BMrHNrFjOfQ", "localVideo":"videos/kolon-trail-run-2026.mp4" },
-  { "year":2026, "region":"태백", "title":"코리아 스노우 트레일", "period":"2025.11 – 2026.01", "scale":"참가자 1,000명", "major":true,
-    "rnr":"해외 물자 소싱·물류 총괄 / 글로벌 스폰서십(중국 3M) 커뮤니케이션 전담",
-    "video":"1m_3MEMLFQg", "localVideo":"videos/korea-snow-trail-2026.mp4" },
-  { "year":2025, "region":"문경", "title":"레전드 트레일", "period":"2025.08 – 2025.11", "scale":"참가자 1,000명",
-    "rnr":"기획·운영 PM / 참가자 모집·이커머스 세팅·백오피스 총괄",
-    "video":"vnI34wmCpxk", "localVideo":"videos/legend-trail-2025.mp4" },
-  { "year":2025, "region":"태백", "title":"베어트레일캠프", "period":"2025.07 – 2025.10", "scale":"참가자 300명",
-    "rnr":"기획·운영 PM / 참가자 모집·현장 운영",
-    "video":"SrNq3uFG9WU", "localVideo":"videos/bear-trail-camp-2025.mp4" },
-  { "year":2025, "region":"태백", "title":"다이나핏 태백 트레일", "period":"2025.06 – 2025.09", "scale":"참가자 3,300명",
-    "major":true, "ready":true,
-    "rnr":"VENUE 현장총괄 PM / 스폰서 업체 소통, 협력 총괄",
-    "video":"L07F4GjIcGY", "localVideo":"videos/dynafit-taebaek-2025.mp4",
-    "desc":"국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
-    "resultLabel":"참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
-    "resultSub":"통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반",
-    "problem":"회사의 급성장으로 최대 <strong>4개의 대형 프로젝트가 동시 진행</strong>되는 상황. 인력 증원 없이 기존의 비정형화된 업무 방식으로는 준비 과정의 <strong>업무 누락과 일정 지연 리스크</strong>가 갈수록 커지고 있었다.",
-    "solution":"전 대회의 공통 필수 일정을 추출해 <strong>'일괄 대회 준비 시스템 & 통합 스케줄러'</strong>를 직접 기획·도입. 동시에 행사 조직을 <strong>설치 / 물자 / 스태프 / 디자인 4개 파트로 구조화</strong>하고 파트별 R&R을 수립해 비정형 업무를 체계로 전환했다.",
-    "result":"중복 준비 과정 통합으로 <strong>프로젝트별 리드타임 단축</strong>, 업무 누락 리스크 최소화. 참가자 <strong>3,300명(전년 대비 +50%)</strong>·스태프 150명 규모의 대회를 지연·사고 없이 완주했고, 이 시스템 역량을 바탕으로 <strong>차기 대회 타겟을 4,200명으로 상향</strong>하는 데 기여했다.",
-    "schedule":"schedule.html",
-    "scheduleCaption":"실제 운영 문서 — 에코라인 트레일 통합 스케줄 v32 · 하단 탭으로 시트 전환 · 휠 스크롤 · Ctrl+휠 확대 · 드래그 이동" },
-  { "year":2025, "region":"태백", "title":"코리아 스노우 트레일", "period":"2024.11 – 2025.01", "scale":"참가자 800명",
-    "rnr":"기획·운영 PM / 참가자 모집·현장 운영",
-    "video":"Oq10m1mMllY", "localVideo":"videos/korea-snow-trail-2025.mp4" },
-  { "year":2024, "region":"태백", "title":"태백 소셜 하이킹", "period":"2024.09 – 2024.11", "scale":"참가자 1,000명",
-    "rnr":"기획·운영 PM / 참가자 모집·현장 운영",
-    "video":"NXpnLzRJpXo", "localVideo":"videos/taebaek-social-hiking-2024.mp4" },
-  { "year":2024, "region":"태백", "title":"다이나핏 태백 트레일", "period":"2024.04 – 2024.09", "scale":"참가자 2,100명",
-    "rnr":"기획·운영 PM / 참가자 모집·이커머스 세팅·현장 운영",
-    "video":"rirZ1C8tekE", "localVideo":"videos/dynafit-taebaek-2024.mp4" },
-  { "year":2024, "region":"충주", "title":"몽벨 씨투 써밋", "period":"2024.03 – 2024.06", "scale":"참가자 약 100명",
-    "rnr":"기획·운영 / 현장 운영" }
+  {
+    "year": 2026,
+    "region": "태백",
+    "title": "코리아 나이트 런",
+    "period": "2026.04 – 2026.07",
+    "scale": "참가자 1,500명",
+    "ready": true,
+    "rnr": "행사 기획·운영 총괄 PM · 후원 유치·계측 총괄",
+    "video": "tTOfsoADDao",
+    "localVideo": "videos/korea-night-run-2026.mp4",
+    "desc": "사(社) 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었다.",
+    "resultLabel": "참가자 1,500명 · 스태프 200명",
+    "resultSub": "첫 야간 대회 무사고 운영 — 야간 운영 노하우의 사내 자산화",
+    "problem": "첫 개최이자 사(社) 최초의 야간 대회 — 시야 확보·코스 이탈·저체온 등 <strong>야간 특유의 안전 리스크</strong>와 <strong>운영 선례 부재</strong>.",
+    "solution": "국내외 야간 트레일 대회 레퍼런스 수집과 관계자 자문을 통한 <strong>야간 코스마킹 체계 신규 도입</strong> — 야간 반사 기물 제작·설치, <strong>야광 반사 테이프를 결합한 코스마킹 테이프</strong>를 견적 단계부터 협의해 자체 제작. <strong>위험구간별 스태프 배치·관리 시스템</strong> 구축·운영.",
+    "result": "참가자 <strong>1,500명 규모 첫 야간 대회의 무사고 완주</strong>. 야간 대회 운영 노하우의 사내 자산화.",
+    "assets": [
+      {
+        "type": "img",
+        "src": "assets/nightrun-marking-tape.jpg",
+        "tab": "마킹 테이프",
+        "cap": "야광 반사 테이프를 결합해 자체 제작한 야간 코스마킹 테이프"
+      },
+      {
+        "type": "img",
+        "src": "assets/nightrun-flags-course.jpg",
+        "tab": "기물 설치",
+        "cap": "야간 반사 기물 — 위험구간(배수로·낙차) 현장 설치"
+      },
+      {
+        "type": "img",
+        "src": "assets/nightrun-flags-detail.jpg",
+        "tab": "기물 상세",
+        "cap": "야간 반사 기물 — 재귀반사 스트라이프 상세"
+      },
+      {
+        "type": "frame",
+        "src": "staffing.html",
+        "tab": "배치 문서",
+        "cap": "위험구간별 스태프 배치·관리 문서 — 지명·행사 정보는 대외비 마스킹"
+      }
+    ]
+  },
+  {
+    "year": 2026,
+    "region": "횡성",
+    "title": "코오롱 트레일 런",
+    "period": "2026.01 – 2026.04",
+    "scale": "참가자 1,700명",
+    "ready": true,
+    "rnr": "클라이언트사(코오롱스포츠) 실무 소통 총괄 · 리워드 소싱·계측 총괄",
+    "video": "BMrHNrFjOfQ",
+    "localVideo": "videos/kolon-trail-run-2026.mp4",
+    "desc": "코오롱스포츠 주최 대회의 운영 대행. 클라이언트 실무 소통 총괄로서 양사 간 보고·승인 체계를 설계하고, 리워드 소싱과 계측을 총괄했다.",
+    "resultLabel": "참가자 1,700명 · 스태프 200명",
+    "resultSub": "대기업 운영 대행 무사고 완수",
+    "problem": "대기업 클라이언트의 운영 대행 — <strong>다층의 의사결정·승인 구조</strong>, 소통 누락 시 전체 일정 지연으로 직결되는 리스크.",
+    "solution": "자체 구축한 <strong>통합 운영 시스템(스케줄러)을 클라이언트에 직접 공유</strong>, 시스템의 일정 체계를 기준으로 양사의 소통·보고 시점 동기화 — 정보 격차와 승인 지연 제거.",
+    "result": "참가자 <strong>1,700명 대회 무사고 운영</strong>. 대기업 프로세스 이해 기반의 <strong>운영 대행 역량 검증</strong>.",
+    "assets": [
+      {
+        "type": "frame",
+        "src": "schedule.html",
+        "tab": "통합 운영 시스템",
+        "cap": "클라이언트와 공유한 통합 운영 시스템 — 실제 문서 (세부 내용 대외비 마스킹)"
+      }
+    ]
+  },
+  {
+    "year": 2026,
+    "region": "태백",
+    "title": "코리아 스노우 트레일",
+    "period": "2025.11 – 2026.01",
+    "scale": "참가자 1,500명",
+    "major": true,
+    "ready": true,
+    "rnr": "해외 물자 소싱·물류 총괄 · 글로벌 스폰서십(중국 3M) 전담",
+    "video": "1m_3MEMLFQg",
+    "localVideo": "videos/korea-snow-trail-2026.mp4",
+    "desc": "겨울 설상 트레일 러닝 대회. 해외 물자 소싱·물류 전 과정과 글로벌 브랜드(중국 3M) 스폰서십 커뮤니케이션을 전담했다.",
+    "resultLabel": "참가자 1,500명 · 스태프 100명",
+    "resultSub": "중국 3M 협업 성사 — 전 참가자 리워드 협찬",
+    "problem": "대규모 리워드 물자의 해외 조달 — <strong>비용·납기 리스크</strong>, 글로벌 브랜드와의 <strong>언어·프로세스 장벽</strong>.",
+    "solution": "해외 생산업체 다이렉트 컨택으로 <strong>견적 비교→단가 협상→발주→납기 관리 전 과정 직접 수행</strong>. 중국 3M 전담 커뮤니케이션으로 <strong>본사 인력의 현장 부스 운영까지 협업 설계</strong>.",
+    "result": "<strong>전 참가자 리워드 협찬</strong>·현장 이벤트 성사. <strong>차기 대회 연속 후원 논의</strong> 및 타 해외 업체 스폰서십 논의 확대."
+  },
+  {
+    "year": 2025,
+    "region": "문경",
+    "title": "문경 레전드 트레일",
+    "period": "2025.08 – 2025.11",
+    "scale": "참가자 1,000명",
+    "rnr": "행사 기획·운영 총괄 · 후원 업체 소통·관리 총괄",
+    "resultLabel": "참가자 1,000명 · 스태프 130명",
+    "video": "vnI34wmCpxk",
+    "localVideo": "videos/legend-trail-2025.mp4"
+  },
+  {
+    "year": 2025,
+    "region": "태백",
+    "title": "베어트레일캠프",
+    "period": "2025.07 – 2025.10",
+    "scale": "참가자 300명",
+    "ready": true,
+    "rnr": "행사 기획·운영 실무 · 이커머스 세팅 총괄",
+    "video": "SrNq3uFG9WU",
+    "localVideo": "videos/bear-trail-camp-2025.mp4",
+    "desc": "트레일 러닝과 캠핑을 결합한 신규 포맷 행사. 기획·운영 실무와 참가자 모집 이커머스 세팅을 담당했다.",
+    "resultLabel": "참가자 300명 · 스태프 30명",
+    "resultSub": "신규 포맷(캠프형) 행사 안착",
+    "problem": "기존 트레일 러닝과 전혀 다른 신규 포맷 — 타깃 유저 니즈에 대한 <strong>데이터·경험 부재</strong>.",
+    "solution": "유사 행사에 <strong>직접 참가하며 유저 니즈 현장 분석</strong>. 참가 과정에서 확보한 인적 네트워크 기반의 행사 대비.",
+    "result": "신규 포맷 행사의 성공적 안착(참가자 300명). <strong>데이터 없는 시장에 대한 자체 조사 프로세스 확보</strong>."
+  },
+  {
+    "year": 2025,
+    "region": "태백",
+    "title": "다이나핏 태백 트레일",
+    "period": "2025.06 – 2025.09",
+    "scale": "참가자 3,300명",
+    "major": true,
+    "ready": true,
+    "rnr": "행사 VENUE 기획·운영 총괄 · 메인 후원사(다이나핏) 소통 총괄",
+    "video": "L07F4GjIcGY",
+    "localVideo": "videos/dynafit-taebaek-2025.mp4",
+    "desc": "국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
+    "resultLabel": "참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
+    "resultSub": "통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반",
+    "problem": "회사의 급성장으로 최대 <strong>4개 대형 프로젝트 동시 진행</strong>. 인력 증원 없는 비정형 업무 방식으로 인한 <strong>업무 누락·일정 지연 리스크 증가</strong>.",
+    "solution": "전 대회 공통 필수 일정을 추출한 <strong>'일괄 대회 준비 시스템 & 통합 스케줄러'</strong> 직접 기획·도입. 행사 조직의 <strong>설치 / 물자 / 스태프 / 디자인 4개 파트 구조화</strong> 및 파트별 R&R 수립으로 비정형 업무의 체계 전환.",
+    "result": "중복 준비 과정 통합을 통한 <strong>프로젝트별 리드타임 단축</strong>과 업무 누락 리스크 최소화. 참가자 <strong>3,300명(전년 대비 +50%)</strong>·스태프 150명 규모 대회의 무지연·무사고 완주. 시스템 역량 기반 <strong>차기 대회 타겟 4,200명 상향</strong> 기여.",
+    "assets": [
+      {
+        "type": "frame",
+        "src": "schedule.html",
+        "tab": "통합 스케줄러",
+        "cap": "실제 운영 문서 — 에코라인 트레일 통합 스케줄 v32 · 하단 탭으로 시트 전환 · 휠 스크롤 · Ctrl+휠 확대 · 드래그 이동"
+      }
+    ]
+  },
+  {
+    "year": 2025,
+    "region": "태백",
+    "title": "코리아 스노우 트레일",
+    "period": "2024.11 – 2025.01",
+    "scale": "참가자 800명",
+    "rnr": "행사 VENUE 운영 총괄 · 메인 후원사(마무트) 소통 총괄",
+    "resultLabel": "참가자 800명 · 스태프 70명",
+    "video": "Oq10m1mMllY",
+    "localVideo": "videos/korea-snow-trail-2025.mp4"
+  },
+  {
+    "year": 2024,
+    "region": "태백",
+    "title": "태백 소셜 하이킹",
+    "period": "2024.09 – 2024.11",
+    "scale": "참가자 1,000명",
+    "rnr": "VENUE 운영 실무 · 디자인 발주·관리 총괄",
+    "resultLabel": "참가자 1,000명 · 스태프 30명",
+    "video": "NXpnLzRJpXo",
+    "localVideo": "videos/taebaek-social-hiking-2024.mp4"
+  },
+  {
+    "year": 2024,
+    "region": "태백",
+    "title": "다이나핏 태백 트레일",
+    "period": "2024.04 – 2024.09",
+    "scale": "참가자 2,100명",
+    "rnr": "VENUE 운영 실무 · 이커머스 운영 실무",
+    "resultLabel": "참가자 2,100명 · 스태프 100명",
+    "video": "rirZ1C8tekE",
+    "localVideo": "videos/dynafit-taebaek-2024.mp4"
+  }
 ]
 </script>
 <script>
@@ -808,35 +959,55 @@ const PLACEHOLDER_VISUAL='<div class="img-placeholder">'
   +'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>'
   +'솔루션 이미지 준비 중</div>';
 
+/* 문제와 해결책 창 좌측 — 증거물(사진·문서) 탭 */
+function buildVisual(p){
+  const vis=document.getElementById("mp-visual");
+  const assets=p.assets||[];
+  if(!assets.length){ vis.innerHTML=PLACEHOLDER_VISUAL; return; }
+  let html="";
+  if(assets.length>1){
+    html+='<div class="asset-tabs">'
+        + assets.map((a,i)=>'<button class="'+(i===0?"on":"")+'" data-a="'+i+'">'+a.tab+'</button>').join("")
+        + '</div>';
+  }
+  html+='<div class="asset-body"></div><div class="sched-cap"></div>';
+  vis.innerHTML=html;
+  const body=vis.querySelector(".asset-body"), cap=vis.querySelector(".sched-cap");
+  function show(i){
+    const a=assets[i];
+    body.innerHTML = a.type==="frame"
+      ? '<iframe class="sched" src="'+a.src+'" loading="lazy" title="실제 운영 문서"></iframe>'
+      : '<img class="asset" src="'+a.src+'" alt="'+(a.cap||"")+'">';
+    cap.textContent=a.cap||"";
+    vis.querySelectorAll(".asset-tabs button").forEach((b,bi)=>b.classList.toggle("on",bi===i));
+  }
+  vis.querySelectorAll(".asset-tabs button").forEach(b=>b.onclick=()=>show(+b.dataset.a));
+  show(0);
+}
+
 function render(){
   const p=PROJECTS[current];
   document.getElementById("project-eyebrow").textContent=p.year+" / "+p.region;
   titleEl.textContent=p.title;
   document.getElementById("rnr-text").textContent=p.rnr||"";
   document.getElementById("project-rnr").style.display=p.rnr?"flex":"none";
+  /* 성과: 내용이 있으면 상세 완성 여부와 무관하게 표시 */
+  resLabel.textContent=p.resultLabel||"";
+  resSub.textContent=p.resultSub||"";
+  document.getElementById("project-result").style.display=p.resultLabel?"flex":"none";
   if(p.ready){
     info.classList.remove("placeholder");
     descEl.textContent=p.desc;
-    resLabel.textContent=p.resultLabel;
-    resSub.textContent=p.resultSub;
     comingTag.style.display="none";
     /* 문제와 해결책 창 내용 */
     document.getElementById("mp-title").textContent=p.year+" "+p.title;
     document.getElementById("mp-problem").innerHTML=p.problem||"";
     document.getElementById("mp-solution").innerHTML=p.solution||"";
     document.getElementById("mp-result").innerHTML=p.result||"";
-    const vis=document.getElementById("mp-visual");
-    if(p.schedule){
-      vis.innerHTML='<iframe class="sched" src="'+p.schedule+'" loading="lazy" title="실제 운영 문서"></iframe>'
-                   +'<div class="sched-cap">'+(p.scheduleCaption||"")+'</div>';
-    }else{
-      vis.innerHTML=PLACEHOLDER_VISUAL;
-    }
+    buildVisual(p);
   }else{
     info.classList.add("placeholder");
     descEl.textContent=p.desc||p.period+" · "+p.scale;
-    resLabel.textContent="";
-    resSub.textContent="";
     comingTag.style.display="inline-block";
   }
   setVideo(p);

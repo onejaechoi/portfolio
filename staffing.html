@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야간 위험구간 스태프 배치·관리표</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Segoe UI",sans-serif;background:#101114;color:#eee;display:flex;flex-direction:column;overflow:hidden}
+#hint{flex:0 0 auto;font-size:10.5px;letter-spacing:.05em;color:rgba(255,255,255,.4);padding:5px 12px;background:#131417;border-bottom:1px solid rgba(255,255,255,.06)}
+#view{flex:1;overflow:auto;cursor:grab;background:#1b1c20}
+#view.drag{cursor:grabbing}
+#zoomwrap{transform-origin:0 0;padding:16px;display:inline-block}
+.sheetbox{background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.5);border-radius:4px;overflow:hidden;display:inline-block}
+table{border-collapse:collapse;table-layout:fixed;background:#fff;color:#111;font-size:11px;line-height:1.3}
+td{border:1px solid #d9d9d9;padding:2px 4px;overflow:hidden;white-space:normal;word-break:keep-all;vertical-align:middle}
+.c0{background:#fde9d9}
+.c1{background:#bfbfbf}
+.c2{background:#ffff00}
+</style></head>
+<body>
+<div id="hint">야간 위험구간 스태프 배치·관리표 · 휠 스크롤 · Ctrl+휠 확대/축소 · 드래그 이동 · 지명·행사 정보는 대외비로 마스킹됨</div>
+<div id="view"><div id="zoomwrap"><div class="sheetbox"><table><colgroup></colgroup><tr><td colspan=9>야간 위험구간 스태프 배치·관리표 — 행사명·지명 비공개 (대외비 마스킹)</td></tr><tr><td class=c0>포인트</td><td class=c0>장소</td><td class=c0>근무시간</td><td class=c0>주요업무</td><td class=c0>야간 안내 시간야간 안내 인원</td><td class=c0>인원</td><td class=c0>비고</td><td class=c0>추가배치인원</td><td class=c0>비고</td></tr><tr><td rowspan=3>A-1[구간 비공개]</td><td>●●●●●●</td><td>05:00~06:00</td><td>루트안내</td><td></td><td rowspan=3 class=c1>3</td><td rowspan=3 class=c2>초반에 출발할 때 길안내 보강</td><td>2</td><td rowspan=24>1교대</td></tr><tr><td>●●●●</td><td></td><td>루트안내</td><td></td><td>1</td></tr><tr><td>●●●●</td><td>05:00~07:00</td><td>루트안내</td><td></td><td></td></tr><tr><td rowspan=3>A-2[구간 비공개]</td><td>●●●●</td><td>05:00~08:00</td><td>루트안내</td><td></td><td rowspan=3 class=c1>3</td><td></td><td></td></tr><tr><td rowspan=2>●●●●●</td><td rowspan=2>05:00~08:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=4>A-3[구간 비공개]</td><td rowspan=2>●●●●</td><td rowspan=2>05:00~08:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=4 class=c1>4</td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td>●●●●</td><td>05:00~08:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td>●●●●●</td><td>05:00~08:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td rowspan=6>A-4[구간 비공개]</td><td rowspan=2>●●●●</td><td rowspan=2>06:00~10:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=6 class=c1>6</td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td>●●●●</td><td>06:00~10:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td>●●●●</td><td>06:00~10:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td>●●●●</td><td>06:00~10:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td>●●●●</td><td>06:00~10:00</td><td>루트안내</td><td></td><td></td><td></td></tr><tr><td rowspan=8>A-5[구간 비공개]</td><td rowspan=2>●●●●</td><td rowspan=2>06:00~10:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=8 class=c1>8</td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>●●●●</td><td rowspan=2>06:00~10:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>●●●●</td><td rowspan=2>06:00~10:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>●●●●●</td><td rowspan=2>06:00~10:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=6>A-6[구간 비공개]</td><td rowspan=2>●●●●●●●</td><td rowspan=2>10:00~14:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=6 class=c1>6</td><td></td><td></td><td rowspan=4>2교대</td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>●●●●●●●</td><td rowspan=2>14:00~19:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td class=c2>19시~ (다음날) 04시야간 스태프 2명</td><td rowspan=3 class=c2>CP6 00시 cut-offCP7 03시 30분 cut-off(야간시간) 약 120명 지나감3시면 사실상 마감</td><td>2</td></tr><tr><td rowspan=2>●●●●●</td><td>10:00~15:00</td><td rowspan=2>루트안내</td><td></td><td></td><td rowspan=2>2교대</td></tr><tr><td>15:00~19:00</td><td class=c2>19시~ (다음날) 04시야간 스태프 1명</td><td>1</td></tr><tr><td rowspan=4>A-7[구간 비공개]</td><td rowspan=4>●●●●●●●</td><td rowspan=2>10:00~15:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=4 class=c1>4</td><td></td><td></td><td rowspan=4>2교대</td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>15:00~19:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td class=c2>19시~ (다음날) 08시야간 스태프 2명</td><td class=c2>CP7 03시 30분 cut-off(야간시간) 약 120명 지나감5시 전 사실상 마감(작년기준 이때부터 DNF 없었음)</td><td>2</td></tr><tr><td rowspan=7>A-8[구간 비공개]</td><td rowspan=4>●●●●●</td><td rowspan=2>10:30~16:00</td><td rowspan=2>루트안내</td><td></td><td rowspan=4 class=c1>4</td><td></td><td></td><td rowspan=4>2교대</td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>16:00~20:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td class=c2>20시~ (다음날) 08시야간 스태프 1명(with. 모범운전자 1명)</td><td class=c2>CP7 03시 30분 cut-off(야간시간) 약 120명 지나감6시 전 사실상 마감</td><td>1</td></tr><tr><td rowspan=3>●●●●●●●●●●</td><td>10:30~16:00</td><td>루트안내</td><td></td><td rowspan=3 class=c1>3</td><td></td><td></td><td rowspan=3>2교대</td></tr><tr><td rowspan=2>16:00~20:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td class=c2>20시~ (다음날) 08시야간 스태프 1명</td><td class=c2>CP7 03시 30분 cut-off(야간시간) 약 120명 지나감6시 전 사실상 마감</td><td>1</td></tr><tr><td rowspan=3>A-8(2)[구간 비공개]</td><td rowspan=3>●●●●●</td><td>10:30~15:00</td><td>루트안내</td><td></td><td rowspan=3 class=c1>3</td><td></td><td></td><td rowspan=3>2교대</td></tr><tr><td rowspan=2>15:00~20:00</td><td rowspan=2>루트안내</td><td></td><td></td><td></td></tr><tr><td class=c2>20시~ (다음날) 08시야간 스태프 1명</td><td class=c2>CP7 03시 30분 cut-off(야간시간) 약 120명 지나감6시 전 사실상 마감</td><td>1</td></tr><tr><td rowspan=4>A-9[구간 비공개]</td><td rowspan=4>●●●●</td><td rowspan=2>11:00~16:00</td><td rowspan=4>루트안내</td><td></td><td rowspan=4 class=c1>4</td><td></td><td></td><td rowspan=4>2교대</td></tr><tr><td></td><td></td><td></td></tr><tr><td rowspan=2>16:00~20:00</td><td></td><td></td><td></td></tr><tr><td class=c2>20시~ (다음날) 09시야간 스태프 1명(with. 모범운전자 1명)</td><td class=c2>CP7 03시 30분 cut-off(야간시간) 약 120명 지나감7시 전 사실상 마감(작년 마지막 주자 도착 6:45)</td><td>1</td></tr><tr><td colspan=4>소계</td><td></td><td class=c1>48</td><td colspan=3></td></tr></table></div></div></div>
+<script>
+const view=document.getElementById('view'),wrap=document.getElementById('zoomwrap');
+let scale=1;
+function fit(){
+  const t=document.querySelector('table');
+  const fw=(view.clientWidth-32)/t.offsetWidth;
+  scale=Math.max(.15,Math.min(1.2,fw));
+  wrap.style.transform='scale('+scale+')';
+}
+window.addEventListener('load',fit);window.addEventListener('resize',fit);fit();
+view.addEventListener('wheel',e=>{
+  if(!e.ctrlKey) return;
+  e.preventDefault();
+  const old=scale;
+  scale=Math.min(3,Math.max(.15,scale*(e.deltaY<0?1.12:0.89)));
+  const r=view.getBoundingClientRect();
+  const mx=e.clientX-r.left+view.scrollLeft, my=e.clientY-r.top+view.scrollTop;
+  wrap.style.transform='scale('+scale+')';
+  view.scrollLeft=mx*scale/old-(e.clientX-r.left);
+  view.scrollTop=my*scale/old-(e.clientY-r.top);
+},{passive:false});
+let dragging=false,sx,sy,sl,st;
+view.addEventListener('mousedown',e=>{dragging=true;view.classList.add('drag');sx=e.clientX;sy=e.clientY;sl=view.scrollLeft;st=view.scrollTop;e.preventDefault();});
+window.addEventListener('mousemove',e=>{if(!dragging)return;view.scrollLeft=sl-(e.clientX-sx);view.scrollTop=st-(e.clientY-sy);});
+window.addEventListener('mouseup',()=>{dragging=false;view.classList.remove('drag');});
+</script>
+</body></html>
