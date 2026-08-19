@@ -25,7 +25,7 @@ function fit(){
   const t=document.querySelector('table');
   const fw=(view.clientWidth-32)/t.offsetWidth;
   scale=Math.max(.15,Math.min(1.2,fw));
-  wrap.style.transform='scale('+scale+')';
+  wrap.style.zoom=scale;
 }
 window.addEventListener('load',fit);window.addEventListener('resize',fit);fit();
 view.addEventListener('wheel',e=>{
@@ -35,7 +35,7 @@ view.addEventListener('wheel',e=>{
   scale=Math.min(3,Math.max(.15,scale*(e.deltaY<0?1.12:0.89)));
   const r=view.getBoundingClientRect();
   const mx=e.clientX-r.left+view.scrollLeft, my=e.clientY-r.top+view.scrollTop;
-  wrap.style.transform='scale('+scale+')';
+  wrap.style.zoom=scale;
   view.scrollLeft=mx*scale/old-(e.clientX-r.left);
   view.scrollTop=my*scale/old-(e.clientY-r.top);
 },{passive:false});

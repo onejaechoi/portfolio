@@ -16,9 +16,9 @@ body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Segoe UI",sans-
 #legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 #legend span{display:inline-flex;align-items:center;gap:5px}
 #legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
-#view{flex:1;overflow:auto;cursor:grab;background:#1b1c20}
+#view{flex:1;overflow:auto;cursor:grab;background:#1b1c20;display:flex}
 #view.drag{cursor:grabbing}
-#zoomwrap{transform-origin:0 0;padding:18px;display:inline-block}
+#zoomwrap{transform-origin:0 0;padding:18px;display:inline-block;margin:auto}
 .sheet{display:none;background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.5);border-radius:4px;overflow:hidden}
 .sheet.on{display:inline-block}
 table{border-collapse:collapse;table-layout:fixed;background:#fff;color:#111;font-size:11px;line-height:1.25}
@@ -77,14 +77,27 @@ b{font-weight:700}
 <script>
 const view=document.getElementById('view'),wrap=document.getElementById('zoomwrap');
 let scale=1;
+/* 시트 전체가 한눈에 들어오도록 자동 맞춤 (이후 Ctrl+휠로 자유 확대) */
+function fitActive(){
+  const t=document.querySelector('.sheet.on table');
+  if(!t) return;
+  const fw=(view.clientWidth-30)/t.offsetWidth;
+  const fh=(view.clientHeight-30)/t.offsetHeight;
+  scale=Math.max(.06,Math.min(1,Math.min(fw,fh))); /* 시트 전체가 한눈에 들어오는 줌아웃 */
+  wrap.style.zoom=scale;
+  view.scrollTo(0,0);
+}
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.sheet').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');
   document.getElementById('s'+b.dataset.s).classList.add('on');
-  view.scrollTo(0,0);
+  fitActive();
 });
 document.getElementById('s0').classList.add('on');
+window.addEventListener('load',fitActive);
+window.addEventListener('resize',fitActive);
+fitActive();
 view.addEventListener('wheel',e=>{
   if(!e.ctrlKey) return;
   e.preventDefault();
@@ -92,7 +105,7 @@ view.addEventListener('wheel',e=>{
   scale=Math.min(3,Math.max(.3,scale*(e.deltaY<0?1.12:0.89)));
   const r=view.getBoundingClientRect();
   const mx=e.clientX-r.left+view.scrollLeft, my=e.clientY-r.top+view.scrollTop;
-  wrap.style.transform='scale('+scale+')';
+  wrap.style.zoom=scale;
   view.scrollLeft=mx*scale/old-(e.clientX-r.left);
   view.scrollTop=my*scale/old-(e.clientY-r.top);
 },{passive:false});
