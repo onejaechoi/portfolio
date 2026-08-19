@@ -65,14 +65,14 @@
   }
   /* 3. 이름 영역 */
   #brand{
-    font-size:15px;font-weight:600;letter-spacing:.14em;
+    font-size:17px;font-weight:600;letter-spacing:.14em;
     color:var(--dim);text-transform:uppercase;cursor:default;user-select:none;
   }
   /* 5. 세부 항목 영역 */
   nav#site-nav{display:flex;gap:26px}
   nav#site-nav button{
     background:none;border:0;cursor:pointer;
-    font:inherit;font-size:12.5px;font-weight:600;letter-spacing:.16em;
+    font:inherit;font-size:14.5px;font-weight:600;letter-spacing:.16em;
     color:var(--dimmer);text-transform:uppercase;padding:4px 0;
     transition:color .25s;
   }
@@ -87,7 +87,7 @@
   }
   #category-bar button{
     background:none;border:0;cursor:pointer;font:inherit;
-    font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
     color:var(--dimmer);padding:8px 18px;border-radius:999px;transition:.25s;
   }
   #category-bar button.active,#category-bar button:hover{color:var(--white);background:rgba(255,255,255,.12)}
@@ -101,55 +101,49 @@
   #project-info.switching{opacity:0;transform:translateY(calc(-50% + 14px))}
   /* 연도 / 지역 */
   #project-eyebrow{
-    font-size:13px;font-weight:700;letter-spacing:.32em;
+    font-size:15px;font-weight:700;letter-spacing:.32em;
     color:var(--dim);text-transform:uppercase;margin-bottom:14px;
     text-shadow:0 1px 10px rgba(0,0,0,.5);
   }
   /* R&R */
   #project-rnr{display:flex;gap:11px;align-items:baseline;margin-bottom:20px}
   .rnr-label{
-    flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:.18em;
+    flex:0 0 auto;font-size:12px;font-weight:800;letter-spacing:.18em;
     color:var(--dimmer);border:1px solid rgba(255,255,255,.28);
     border-radius:4px;padding:2.5px 8px;
   }
   #project-rnr .rnr-text{
-    font-size:14px;font-weight:600;letter-spacing:.02em;
+    font-size:16px;font-weight:600;letter-spacing:.02em;
     color:#fff;line-height:1.5;                /* 흰색 · 오퍼시티 100% */
     text-shadow:0 1px 12px rgba(0,0,0,.65);
   }
   #project-title{
-    font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:.01em;
+    font-size:clamp(39px,5.3vw,67px);font-weight:800;letter-spacing:.01em;
     line-height:1.12;margin-bottom:18px;
     text-shadow:0 2px 24px rgba(0,0,0,.45);
   }
   #project-desc{
-    font-size:15.5px;line-height:1.65;color:var(--dim);
+    font-size:18px;line-height:1.65;color:var(--dim);
     margin-bottom:26px;max-width:440px;
     text-shadow:0 1px 12px rgba(0,0,0,.5);
   }
   #project-result{display:flex;gap:11px;align-items:baseline}
   #project-result .label{
-    font-size:14px;font-weight:800;letter-spacing:.04em;margin-bottom:4px;
+    font-size:16px;font-weight:800;letter-spacing:.04em;margin-bottom:4px;
   }
   #project-result .sub{
-    font-size:13px;color:var(--dimmer);letter-spacing:.03em;line-height:1.55;
+    font-size:15px;color:var(--dimmer);letter-spacing:.03em;line-height:1.55;
   }
   #btn-problem{
     margin-top:30px;display:inline-flex;align-items:center;gap:8px;
     background:rgba(30,30,30,.62);backdrop-filter:blur(10px);
     border:1px solid rgba(255,255,255,.14);border-radius:999px;
-    color:var(--white);font:inherit;font-size:12.5px;font-weight:700;
+    color:var(--white);font:inherit;font-size:14.5px;font-weight:700;
     letter-spacing:.14em;text-transform:uppercase;
     padding:13px 26px;cursor:pointer;transition:.25s;
   }
   #btn-problem:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3)}
   #project-info.placeholder #btn-problem{display:none}
-  .coming-soon-tag{
-    display:inline-block;margin-top:26px;
-    font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--dimmer);border:1px dashed rgba(255,255,255,.3);
-    border-radius:999px;padding:10px 22px;
-  }
 
   /* ── 6. 연도 영역 (행사 일정 타임라인) ─────────────────────── */
   #timeline{
@@ -163,11 +157,11 @@
   #timeline .tl-arrow{
     flex:0 0 auto;width:30px;height:30px;border-radius:50%;
     background:rgba(255,255,255,.08);border:0;color:var(--dim);cursor:pointer;
-    font-size:14px;line-height:1;transition:.25s;
+    font-size:16px;line-height:1;transition:.25s;
   }
   #timeline .tl-arrow:hover{background:rgba(255,255,255,.2);color:#fff}
   #timeline .tl-year{
-    flex:0 0 auto;font-size:12px;font-weight:700;letter-spacing:.1em;
+    flex:0 0 auto;font-size:14px;font-weight:700;letter-spacing:.1em;
     color:var(--dimmer);padding:0 4px;user-select:none;
   }
   #timeline .tl-dot{
@@ -197,7 +191,7 @@
   .btn-close{
     width:34px;height:34px;border-radius:50%;flex:0 0 auto;
     background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-    color:#ddd;font-size:15px;line-height:1;cursor:pointer;transition:.25s;
+    color:#ddd;font-size:17px;line-height:1;cursor:pointer;transition:.25s;
   }
   .btn-close:hover{background:rgba(255,255,255,.22);color:#fff}
 
@@ -210,9 +204,9 @@
     display:flex;align-items:center;justify-content:space-between;
     padding:18px 24px;border-bottom:1px solid var(--card-border);
   }
-  #modal-problem .mp-header h2{font-size:16px;font-weight:800;letter-spacing:.03em}
+  #modal-problem .mp-header h2{font-size:18.5px;font-weight:800;letter-spacing:.03em}
   #modal-problem .mp-header .mp-badge{
-    font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--dimmer);
+    font-size:12.5px;font-weight:700;letter-spacing:.16em;color:var(--dimmer);
     text-transform:uppercase;margin-right:14px;
   }
   #modal-problem .mp-body{
@@ -227,7 +221,7 @@
   .mp-visual .asset-tabs{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap}
   .mp-visual .asset-tabs button{
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-    border-radius:999px;color:var(--dimmer);font:inherit;font-size:11px;font-weight:700;
+    border-radius:999px;color:var(--dimmer);font:inherit;font-size:12.5px;font-weight:700;
     letter-spacing:.05em;padding:6px 13px;cursor:pointer;transition:.2s;
   }
   .mp-visual .asset-tabs button:hover{color:#fff}
@@ -242,25 +236,25 @@
     border-radius:10px;background:#0a0b0d;
   }
   .mp-visual .sched-cap{
-    flex:0 0 auto;font-size:11.5px;letter-spacing:.05em;
+    flex:0 0 auto;font-size:13px;letter-spacing:.05em;
     color:var(--dimmer);text-align:center;line-height:1.5;
   }
   .mp-visual .img-placeholder{
     width:100%;height:100%;min-height:320px;border:1.5px dashed rgba(255,255,255,.18);
     border-radius:12px;display:flex;flex-direction:column;gap:10px;
     align-items:center;justify-content:center;color:var(--dimmer);
-    font-size:13px;letter-spacing:.06em;
+    font-size:15px;letter-spacing:.06em;
   }
   .mp-visual .img-placeholder svg{opacity:.4}
   /* 우측 — 문제/해결책/결과 텍스트 */
   .mp-text{padding:30px 30px 36px;overflow:auto}
   .mp-text section+section{margin-top:26px}
   .mp-text h3{
-    font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+    font-size:14px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
     color:var(--dimmer);margin-bottom:9px;
   }
   .mp-text h3 span{color:#fff}
-  .mp-text p{font-size:14.5px;line-height:1.75;color:rgba(255,255,255,.88)}
+  .mp-text p{font-size:16.5px;line-height:1.75;color:rgba(255,255,255,.88)}
   .mp-text strong{color:#fff;font-weight:700}
 
   /* ── ABOUT / CONNECT 카드 ─────────────────────────────────── */
@@ -276,19 +270,19 @@
     display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);
   }
   .card-modal h2{
-    font-size:22px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;
+    font-size:25.5px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;
     line-height:1.4;margin-bottom:4px;
   }
   .card-modal .role{
-    font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+    font-size:12.5px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
     color:var(--dimmer);margin-bottom:24px;
   }
-  .card-modal .bio{text-align:left;font-size:14px;line-height:1.75;color:rgba(255,255,255,.85)}
+  .card-modal .bio{text-align:left;font-size:16px;line-height:1.75;color:rgba(255,255,255,.85)}
   .card-modal .bio p+p{margin-top:13px}
   .card-modal .bio strong{color:#fff}
   .card-modal .meta-line{
     margin-top:22px;padding-top:18px;border-top:1px solid var(--card-border);
-    font-size:12.5px;color:var(--dimmer);line-height:1.7;text-align:left;
+    font-size:14.5px;color:var(--dimmer);line-height:1.7;text-align:left;
   }
 
   /* CONNECT 버튼들 */
@@ -300,11 +294,11 @@
   }
   .connect-btns a:hover,.connect-btns button:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
   #phone-reveal{
-    margin-top:20px;font-size:15px;letter-spacing:.08em;color:#fff;
+    margin-top:20px;font-size:17px;letter-spacing:.08em;color:#fff;
     min-height:22px;opacity:0;transition:opacity .3s;
   }
   #phone-reveal.show{opacity:1}
-  #phone-reveal small{display:block;font-size:11px;color:var(--dimmer);letter-spacing:.14em;margin-top:4px}
+  #phone-reveal small{display:block;font-size:12.5px;color:var(--dimmer);letter-spacing:.14em;margin-top:4px}
 
   /* ── RESUME 모달 ──────────────────────────────────────────── */
   #modal-resume .modal-box{
@@ -315,26 +309,26 @@
     display:flex;align-items:center;justify-content:space-between;
     padding:16px 22px;border-bottom:1px solid var(--card-border);
   }
-  #modal-resume .rs-header h2{font-size:16px;font-weight:800}
+  #modal-resume .rs-header h2{font-size:18.5px;font-weight:800}
   .rs-actions{display:flex;gap:10px;align-items:center}
   .btn-pdf{
     display:inline-flex;align-items:center;gap:7px;
     background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
-    border-radius:999px;color:#fff;font:inherit;font-size:12px;font-weight:700;
+    border-radius:999px;color:#fff;font:inherit;font-size:14px;font-weight:700;
     letter-spacing:.08em;padding:9px 18px;cursor:pointer;text-decoration:none;transition:.25s;
   }
   .btn-pdf:hover{background:rgba(255,255,255,.22)}
   .rs-body{overflow:auto;padding:36px 44px;background:#0d0e10}
-  .rs-body h1{font-size:21px;font-weight:800;margin-bottom:6px}
-  .rs-body .rs-contact{font-size:12.5px;color:var(--dimmer);line-height:1.8;margin-bottom:28px}
+  .rs-body h1{font-size:24px;font-weight:800;margin-bottom:6px}
+  .rs-body .rs-contact{font-size:14.5px;color:var(--dimmer);line-height:1.8;margin-bottom:28px}
   .rs-body h2{
-    font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    font-size:15px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
     color:#fff;border-bottom:1px solid var(--card-border);
     padding-bottom:8px;margin:30px 0 14px;
   }
-  .rs-body h3{font-size:15px;font-weight:800;margin:20px 0 3px}
-  .rs-body .rs-sub{font-size:12.5px;color:var(--dimmer);margin-bottom:8px}
-  .rs-body p,.rs-body li{font-size:13.5px;line-height:1.75;color:rgba(255,255,255,.85)}
+  .rs-body h3{font-size:17px;font-weight:800;margin:20px 0 3px}
+  .rs-body .rs-sub{font-size:14.5px;color:var(--dimmer);margin-bottom:8px}
+  .rs-body p,.rs-body li{font-size:15.5px;line-height:1.75;color:rgba(255,255,255,.85)}
   .rs-body ul{padding-left:18px;margin:6px 0 10px}
   .rs-body li+li{margin-top:5px}
   .rs-body strong{color:#fff}
@@ -346,14 +340,14 @@
   }
   body.admin #admin-bar{display:flex}
   #admin-bar .admin-tag{
-    font-size:10.5px;font-weight:800;letter-spacing:.16em;color:#ffd166;
+    font-size:12px;font-weight:800;letter-spacing:.16em;color:#ffd166;
     border:1px solid rgba(255,209,102,.4);border-radius:999px;padding:6px 12px;
     background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
   }
   #admin-bar button{
     background:rgba(20,20,20,.75);backdrop-filter:blur(8px);
     border:1px solid rgba(255,255,255,.2);border-radius:999px;
-    color:#fff;font:inherit;font-size:12px;font-weight:700;letter-spacing:.06em;
+    color:#fff;font:inherit;font-size:14px;font-weight:700;letter-spacing:.06em;
     padding:9px 18px;cursor:pointer;transition:.25s;
   }
   #admin-bar button:hover{background:rgba(255,255,255,.18)}
@@ -364,7 +358,7 @@
   #toast{
     position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(10px);
     z-index:40;background:rgba(255,255,255,.95);color:#111;
-    font-size:13px;font-weight:700;letter-spacing:.04em;
+    font-size:15px;font-weight:700;letter-spacing:.04em;
     padding:11px 22px;border-radius:999px;opacity:0;pointer-events:none;
     transition:opacity .3s, transform .3s;
   }
@@ -378,7 +372,7 @@
   }
   #intro.done{opacity:0;pointer-events:none}
   .intro-name{
-    font-size:clamp(30px,4.2vw,52px);font-weight:250;
+    font-size:clamp(34px,4.8vw,60px);font-weight:250;
     letter-spacing:.85em;text-indent:.85em;text-transform:uppercase;color:#fff;
     opacity:0;animation:introName 1.7s cubic-bezier(.2,.7,.3,1) .25s forwards;
   }
@@ -387,14 +381,14 @@
     to{opacity:1;letter-spacing:.3em;text-indent:.3em}
   }
   .intro-role{
-    margin-top:18px;font-size:12px;font-weight:600;
+    margin-top:18px;font-size:14px;font-weight:600;
     letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;
     color:rgba(255,255,255,.55);
     opacity:0;animation:introFadeUp .9s ease 1.35s forwards;
   }
   .intro-tags{
     margin-top:46px;display:flex;align-items:center;gap:16px;
-    font-size:13.5px;font-weight:500;letter-spacing:.12em;color:rgba(255,255,255,.88);
+    font-size:15.5px;font-weight:500;letter-spacing:.12em;color:rgba(255,255,255,.88);
   }
   .intro-tags span{opacity:0;animation:introFadeUp .8s ease forwards}
   .intro-tags .sep{color:rgba(255,255,255,.28);font-weight:300}
@@ -484,7 +478,6 @@
     </div>
   </div>
   <button id="btn-problem" data-open="modal-problem">문제와 해결책</button>
-  <span class="coming-soon-tag" style="display:none">상세 콘텐츠 준비 중</span>
 </main>
 
 <!-- 6. 연도 영역 — 행사 일정 타임라인 -->
@@ -558,7 +551,7 @@
       </div>
     </div>
     <div class="rs-body">
-      <h1>최원재 <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em">WONJAE CHOI</span></h1>
+      <h1>최원재 <span style="font-size:15px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em">WONJAE CHOI</span></h1>
       <div class="rs-contact">
         Phone 010-2245-7638 · Email qbxlzbxlgksl@naver.com<br>
         국립공주대학교 영상학과 4년제 학사 졸업 (2023.03)
@@ -788,7 +781,7 @@
     "major": true,
     "ready": true,
     "home": true,
-    "rnr": "행사 VENUE 기획·운영 총괄 · 메인 후원사(다이나핏) 소통 총괄",
+    "rnr": "행사 VENUE 기획 운영 총괄 및 전체 행사 실무 운영 기획",
     "video": "L07F4GjIcGY",
     "localVideo": "videos/dynafit-taebaek-2025.mp4",
     "desc": "국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
@@ -879,7 +872,6 @@ const titleEl=document.getElementById("project-title");
 const descEl=document.getElementById("project-desc");
 const resLabel=document.querySelector("#project-result .label");
 const resSub=document.querySelector("#project-result .sub");
-const comingTag=document.querySelector(".coming-soon-tag");
 const videoLayer=document.getElementById("video-layer");
 const localV=document.getElementById("bg-local");
 
@@ -1002,7 +994,6 @@ function render(){
   if(p.ready){
     info.classList.remove("placeholder");
     descEl.textContent=p.desc;
-    comingTag.style.display="none";
     /* 문제와 해결책 창 내용 */
     document.getElementById("mp-title").textContent=p.year+" "+p.title;
     document.getElementById("mp-problem").innerHTML=p.problem||"";
@@ -1012,7 +1003,6 @@ function render(){
   }else{
     info.classList.add("placeholder");
     descEl.textContent=p.desc||p.period+" · "+p.scale;
-    comingTag.style.display="inline-block";
   }
   setVideo(p);
   buildTimeline();
