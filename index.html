@@ -231,6 +231,16 @@
     width:100%;height:100%;min-height:430px;border:0;border-radius:10px;
     background:#101114;box-shadow:0 6px 30px rgba(0,0,0,.4);
   }
+  .mp-visual .gal{
+    width:100%;height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:16px;
+    scrollbar-width:thin;
+  }
+  .mp-visual .gal figure{margin:0}
+  .mp-visual .gal img{width:100%;border-radius:10px;display:block}
+  .mp-visual .gal figcaption{
+    font-size:13px;color:var(--dimmer);text-align:center;
+    line-height:1.5;padding:8px 6px 2px;word-break:keep-all;
+  }
   .mp-visual img.asset{
     width:100%;height:100%;min-height:0;object-fit:contain;
     border-radius:10px;background:#0a0b0d;
@@ -696,41 +706,23 @@
     "period": "2026.04 – 2026.07",
     "scale": "참가자 1,500명",
     "ready": true,
-    "rnr": "행사 기획·운영 총괄 PM · 후원 유치·계측 총괄",
-    "tease": "사상 첫 야간 대회, 운영 선례 제로 — 1,500명을 어떻게 무사고로 완주시켰을까?",
+    "rnr": "행사 기획·운영 총괄 PM",
+    "tease": "참고할 선례가 없는 사상 첫 야간 대회 — 보이지 않는 리스크는 어떻게 관리됐을까?",
     "video": "tTOfsoADDao",
     "localVideo": "videos/korea-night-run-2026.mp4",
-    "desc": "사(社) 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었다.",
+    "desc": "사 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었다.",
     "resultLabel": "참가자 1,500명 · 스태프 200명",
     "resultSub": "첫 야간 대회 무사고 운영 — 야간 운영 노하우의 사내 자산화",
-    "problem": "첫 개최이자 사(社) 최초의 야간 대회 — 시야 확보·코스 이탈·저체온 등 <strong>야간 특유의 안전 리스크</strong>와 <strong>운영 선례 부재</strong>.",
-    "solution": "국내외 야간 트레일 대회 레퍼런스 수집과 관계자 자문을 통한 <strong>야간 코스마킹 체계 신규 도입</strong> — 야간 반사 기물 제작·설치, <strong>야광 반사 테이프를 결합한 코스마킹 테이프</strong>를 견적 단계부터 협의해 자체 제작. <strong>위험구간별 스태프 배치·관리 시스템</strong> 구축·운영.",
+    "problem": "첫 개최이자 사(社) 최초의 야간 대회 — 시야 확보·코스 이탈·저체온 등 <strong>야간 특유의 안전 리스크</strong>, 그리고 <strong>선례 부재로 리스크의 규모조차 가늠하기 어려운 상황</strong>.",
+    "solution": "국내외 야간 트레일 대회 레퍼런스 수집과 관계자 자문을 통한 <strong>야간 코스마킹 체계 신규 도입</strong> — 중국 생산업체와의 별도 협의로 야간 반사 기물을 제작·설치하고, <strong>야광 반사 테이프를 결합한 코스마킹 테이프</strong>를 견적 단계부터 협의해 자체 제작. <strong>위험구간별 스태프 배치·관리 시스템</strong> 구축·운영.",
     "result": "참가자 <strong>1,500명 규모 첫 야간 대회의 무사고 완주</strong>. 야간 대회 운영 노하우의 사내 자산화.",
     "assets": [
-      {
-        "type": "img",
-        "src": "assets/nightrun-marking-tape.jpg",
-        "tab": "마킹 테이프",
-        "cap": "야광 반사 테이프를 결합해 자체 제작한 야간 코스마킹 테이프"
-      },
-      {
-        "type": "img",
-        "src": "assets/nightrun-flags-course.jpg",
-        "tab": "기물 설치",
-        "cap": "야간 반사 기물 — 위험구간(배수로·낙차) 현장 설치"
-      },
-      {
-        "type": "img",
-        "src": "assets/nightrun-flags-detail.jpg",
-        "tab": "기물 상세",
-        "cap": "야간 반사 기물 — 재귀반사 스트라이프 상세"
-      },
-      {
-        "type": "frame",
-        "src": "staffing.html",
-        "tab": "배치 문서",
-        "cap": "위험구간별 스태프 배치·관리 문서 — 지명·행사 정보는 대외비 마스킹"
-      }
+      { "type": "gallery", "tab": "야간 설치 기물", "items": [
+        { "src": "assets/nightrun-marking-tape.jpg", "cap": "야광 반사 테이프를 결합해 별도 제작을 발주한 야간 코스마킹 테이프" },
+        { "src": "assets/nightrun-flags-course.jpg", "cap": "야간 반사 기물 — 위험구간(배수로·낙차) 현장 설치" },
+        { "src": "assets/nightrun-flags-detail.jpg", "cap": "재귀반사 스트라이프를 추가한 야간 반사 기물 — 조명 없이 헤드랜턴 불빛만으로도 시인성 확보" }
+      ] },
+      { "type": "frame", "src": "staffing.html", "tab": "배치 문서", "cap": "위험구간별 스태프 배치·관리 문서 — 세부 내용은 대외비 마스킹" }
     ]
   },
   {
@@ -740,14 +732,14 @@
     "period": "2026.01 – 2026.04",
     "scale": "참가자 1,700명",
     "ready": true,
-    "rnr": "클라이언트사(코오롱스포츠) 실무 소통 총괄 · 리워드 소싱·계측 총괄",
+    "rnr": "클라이언트사(코오롱스포츠) 실무 소통 총괄 · 행사 운영 실무 총괄",
     "tease": "대기업의 겹겹의 의사결정 구조 — 일정 지연 없이 어떻게 통과했을까?",
     "video": "BMrHNrFjOfQ",
     "localVideo": "videos/kolon-trail-run-2026.mp4",
     "desc": "코오롱스포츠 주최 대회의 운영 대행. 클라이언트 실무 소통 총괄로서 양사 간 보고·승인 체계를 설계하고, 리워드 소싱과 계측을 총괄했다.",
     "resultLabel": "참가자 1,700명 · 스태프 200명",
     "resultSub": "대기업 운영 대행 무사고 완수",
-    "problem": "대기업 클라이언트의 운영 대행 — <strong>다층의 의사결정·승인 구조</strong>, 소통 누락 시 전체 일정 지연으로 직결되는 리스크.",
+    "problem": "대기업 클라이언트의 운영 대행 — <strong>다층의 의사결정·승인 구조</strong> 속에서 결정 번복과 회신 지연이 반복되며, <strong>전체 일정을 맞추지 못할 리스크</strong>가 점점 커지고 있었음.",
     "solution": "자체 구축한 <strong>통합 운영 시스템(스케줄러)을 클라이언트에 직접 공유</strong>, 시스템의 일정 체계를 기준으로 양사의 소통·보고 시점 동기화 — 정보 격차와 승인 지연 제거.",
     "result": "참가자 <strong>1,700명 대회 무사고 운영</strong>. 대기업 프로세스 이해 기반의 <strong>운영 대행 역량 검증</strong>.",
     "assets": [
@@ -815,22 +807,22 @@
     "major": true,
     "ready": true,
     "home": true,
-    "tease": "최대 4개 대회 동시 진행, 인력은 그대로 — 이 대회는 어떻게 +50% 성장했을까?",
+    "tease": "여러 대회가 동시에, 이끌 사람은 부족 — 이 대회는 어떻게 무사히 치러졌을까?",
     "rnr": "행사 VENUE 기획 운영 총괄 및 전체 행사 실무 운영 기획",
     "video": "L07F4GjIcGY",
     "localVideo": "videos/dynafit-taebaek-2025.mp4",
     "desc": "국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
     "resultLabel": "참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
     "resultSub": "통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반",
-    "problem": "회사의 급성장으로 최대 <strong>4개 대형 프로젝트 동시 진행</strong>. 인력 증원 없는 비정형 업무 방식으로 인한 <strong>업무 누락·일정 지연 리스크 증가</strong>.",
-    "solution": "전 대회 공통 필수 일정을 추출한 <strong>'일괄 대회 준비 시스템 & 통합 스케줄러'</strong> 직접 기획·도입. 행사 조직의 <strong>설치 / 물자 / 스태프 / 디자인 4개 파트 구조화</strong> 및 파트별 R&R 수립으로 비정형 업무의 체계 전환.",
-    "result": "중복 준비 과정 통합을 통한 <strong>프로젝트별 리드타임 단축</strong>과 업무 누락 리스크 최소화. 참가자 <strong>3,300명(전년 대비 +50%)</strong>·스태프 150명 규모 대회의 무지연·무사고 완주. 시스템 역량 기반 <strong>차기 대회 타겟 4,200명 상향</strong> 기여.",
+    "problem": "회사가 빠르게 성장하며 <strong>여러 대회를 동시에 준비</strong>해야 했지만, 실무 인원에 비해 프로젝트 전체를 이끌 매니저는 부족한 상황. 업무가 과중해지면서 <strong>리드타임 관리와 세부 업무 팔로우업의 누락 리스크</strong>가 점점 커지고 있었음.",
+    "solution": "모든 대회에 공통으로 들어가는 필수 일정과 대회별 세부 일정을 분리해 추출하고, 이를 바탕으로 <strong>대회를 일괄 준비하는 자체 시스템을 직접 기획·도입</strong>. 행사 조직을 <strong>설치 / 물자 / 운영 / 디자인 4개 파트로 구조화</strong>하고 파트별 인력 배치·협업 체계를 갖춰 기존 방식의 리스크를 낮춤.",
+    "result": "동시에 준비되는 프로젝트들의 세부 내용까지 <strong>누락 없이 관리</strong>. 당시 최대 규모였던 다이나핏 태백 트레일의 성료 — <strong>참가자 3,300명·스태프 150명(전년 대비 +50%)</strong> — 와 함께 <strong>차기 대회 모객 목표 4,200명 상향</strong>에 기여.",
     "assets": [
       {
         "type": "frame",
         "src": "schedule.html",
         "tab": "통합 스케줄러",
-        "cap": "실제 운영 문서 — 에코라인 트레일 통합 스케줄 v32 · 하단 탭으로 시트 전환 · 휠 스크롤 · Ctrl+휠 확대 · 드래그 이동"
+        "cap": "실제 운영 문서 / 세부내용은 대외비로 마스킹 됨"
       }
     ]
   },
@@ -1006,9 +998,15 @@ function buildVisual(p){
   const body=vis.querySelector(".asset-body"), cap=vis.querySelector(".sched-cap");
   function show(i){
     const a=assets[i];
-    body.innerHTML = a.type==="frame"
-      ? '<iframe class="sched" src="'+a.src+'" loading="lazy" title="실제 운영 문서"></iframe>'
-      : '<img class="asset" src="'+a.src+'" alt="'+(a.cap||"")+'">';
+    if(a.type==="frame"){
+      body.innerHTML='<iframe class="sched" src="'+a.src+'" loading="lazy" title="실제 운영 문서"></iframe>';
+    }else if(a.type==="gallery"){
+      body.innerHTML='<div class="gal">'+a.items.map(it=>
+        '<figure><img src="'+it.src+'" alt="'+(it.cap||"")+'" loading="lazy"><figcaption>'+(it.cap||"")+'</figcaption></figure>'
+      ).join("")+'</div>';
+    }else{
+      body.innerHTML='<img class="asset" src="'+a.src+'" alt="'+(a.cap||"")+'">';
+    }
     cap.textContent=a.cap||"";
     vis.querySelectorAll(".asset-tabs button").forEach((b,bi)=>b.classList.toggle("on",bi===i));
   }
