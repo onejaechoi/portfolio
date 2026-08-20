@@ -354,6 +354,29 @@
   body.admin [data-edit]{outline:1px dashed rgba(255,209,102,.55);outline-offset:4px;cursor:text;border-radius:2px}
   body.admin [data-edit]:focus{outline:1.5px solid rgba(255,209,102,.9)}
 
+  /* 오토 티저 카드 — 진입 몇 초 후 문제 후킹 (tease 필드가 있는 프로젝트만) */
+  #teaser{
+    position:fixed;right:34px;bottom:120px;z-index:15;width:340px;
+    background:rgba(15,16,18,.88);backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;
+    padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+    opacity:0;transform:translateX(40px);pointer-events:none;
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.8,.3,1);
+  }
+  #teaser.show{opacity:1;transform:none;pointer-events:auto}
+  #teaser .t-label{font-size:12.5px;font-weight:800;letter-spacing:.22em;color:#ffd166;text-transform:uppercase;margin-bottom:9px}
+  #teaser p{font-size:17px;line-height:1.6;color:#fff;font-weight:600;margin-bottom:16px;word-break:keep-all}
+  #teaser-go{
+    background:#fff;border:0;border-radius:999px;color:#111;font:inherit;
+    font-size:15px;font-weight:800;padding:11px 20px;cursor:pointer;transition:.25s;
+  }
+  #teaser-go:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,255,255,.25)}
+  #teaser-x{
+    position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;
+    background:rgba(255,255,255,.08);border:0;color:#999;font-size:14px;cursor:pointer;
+  }
+  #teaser-x:hover{color:#fff;background:rgba(255,255,255,.2)}
+
   /* 토스트 */
   #toast{
     position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(10px);
@@ -652,6 +675,14 @@
   <button id="btn-admin-off">편집 종료</button>
 </div>
 
+<!-- 오토 티저 카드 -->
+<div id="teaser">
+  <button id="teaser-x" aria-label="닫기">&#10005;</button>
+  <div class="t-label">Problem</div>
+  <p id="teaser-text"></p>
+  <button id="teaser-go">해결 과정 보기 &rarr;</button>
+</div>
+
 <div id="toast">복사되었습니다</div>
 
 <!-- ── 프로젝트 데이터 (관리자 모드에서 수정한 내용이 여기에 반영되어 다운로드됨) ──
@@ -666,6 +697,7 @@
     "scale": "참가자 1,500명",
     "ready": true,
     "rnr": "행사 기획·운영 총괄 PM · 후원 유치·계측 총괄",
+    "tease": "사상 첫 야간 대회, 운영 선례 제로 — 1,500명을 어떻게 무사고로 완주시켰을까?",
     "video": "tTOfsoADDao",
     "localVideo": "videos/korea-night-run-2026.mp4",
     "desc": "사(社) 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었다.",
@@ -709,6 +741,7 @@
     "scale": "참가자 1,700명",
     "ready": true,
     "rnr": "클라이언트사(코오롱스포츠) 실무 소통 총괄 · 리워드 소싱·계측 총괄",
+    "tease": "대기업의 겹겹의 의사결정 구조 — 일정 지연 없이 어떻게 통과했을까?",
     "video": "BMrHNrFjOfQ",
     "localVideo": "videos/kolon-trail-run-2026.mp4",
     "desc": "코오롱스포츠 주최 대회의 운영 대행. 클라이언트 실무 소통 총괄로서 양사 간 보고·승인 체계를 설계하고, 리워드 소싱과 계측을 총괄했다.",
@@ -735,6 +768,7 @@
     "major": true,
     "ready": true,
     "rnr": "해외 물자 소싱·물류 총괄 · 글로벌 스폰서십(중국 3M) 전담",
+    "tease": "언어도 프로세스도 다른 글로벌 브랜드 — 어떻게 전 참가자 협찬을 이끌어냈을까?",
     "video": "1m_3MEMLFQg",
     "localVideo": "videos/korea-snow-trail-2026.mp4",
     "desc": "겨울 설상 트레일 러닝 대회. 해외 물자 소싱·물류 전 과정과 글로벌 브랜드(중국 3M) 스폰서십 커뮤니케이션을 전담했다.",
@@ -781,6 +815,7 @@
     "major": true,
     "ready": true,
     "home": true,
+    "tease": "최대 4개 대회 동시 진행, 인력은 그대로 — 이 대회는 어떻게 +50% 성장했을까?",
     "rnr": "행사 VENUE 기획 운영 총괄 및 전체 행사 실무 운영 기획",
     "video": "L07F4GjIcGY",
     "localVideo": "videos/dynafit-taebaek-2025.mp4",
@@ -1042,6 +1077,7 @@ window.addEventListener("wheel",e=>{
 function openModal(id){
   document.getElementById(id).classList.add("open");
   document.body.classList.add("focus-mode");
+  const tz=document.getElementById("teaser"); if(tz) tz.classList.remove("show");
 }
 function closeModals(){
   document.querySelectorAll(".modal.open").forEach(m=>m.classList.remove("open"));
@@ -1135,6 +1171,26 @@ document.getElementById("btn-dl").addEventListener("click",()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
   showToast("index.html 다운로드 — 저장소에 덮어쓰면 반영됩니다");
 });
+
+/* 오토 티저: tease 필드가 있는 프로젝트에서 진입 몇 초 후 문제 후킹 카드 슬라이드 인 (프로젝트당 1회) */
+let teaserTimer=null; const teaserSeen={};
+function armTeaser(){
+  clearTimeout(teaserTimer);
+  document.getElementById("teaser").classList.remove("show");
+  const p=PROJECTS[current], idx=current;
+  if(!p.tease||teaserSeen[idx])return;
+  teaserTimer=setTimeout(()=>{
+    if(idx!==current)return;
+    if(document.body.classList.contains("focus-mode"))return;
+    document.getElementById("teaser-text").textContent=p.tease;
+    document.getElementById("teaser").classList.add("show");
+    teaserSeen[idx]=true;
+  }, introDone?4000:INTRO_MIN+4500);
+}
+document.getElementById("teaser-x").addEventListener("click",()=>document.getElementById("teaser").classList.remove("show"));
+document.getElementById("teaser-go").addEventListener("click",()=>openModal("modal-problem"));
+const _origRender=render;
+render=function(){ _origRender(); armTeaser(); };
 
 render();
 </script>
