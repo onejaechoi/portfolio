@@ -265,6 +265,9 @@
   }
   .mp-text h3 span{color:#fff}
   .mp-text p{font-size:16.5px;line-height:1.75;color:rgba(255,255,255,.88)}
+  .mp-text p .li{display:block;padding-left:16px;text-indent:-16px;margin-bottom:9px}
+  .mp-text p .li::before{content:"·  "}
+  .mp-text p .li:last-child{margin-bottom:0}
   .mp-text strong{color:#fff;font-weight:700}
 
   /* ── ABOUT / CONNECT 카드 ─────────────────────────────────── */
@@ -688,7 +691,7 @@
 <!-- 오토 티저 카드 -->
 <div id="teaser">
   <button id="teaser-x" aria-label="닫기">&#10005;</button>
-  <div class="t-label">Problem</div>
+  <div class="t-label">Key Challenge</div>
   <p id="teaser-text"></p>
   <button id="teaser-go">해결 과정 보기 &rarr;</button>
 </div>
@@ -707,15 +710,14 @@
     "scale": "참가자 1,500명",
     "ready": true,
     "rnr": "행사 기획·운영 총괄 PM",
-    "tease": "참고할 선례가 없는 사상 첫 야간 대회 — 보이지 않는 리스크는 어떻게 관리됐을까?",
     "video": "tTOfsoADDao",
     "localVideo": "videos/korea-night-run-2026.mp4",
     "desc": "사 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었다.",
     "resultLabel": "참가자 1,500명 · 스태프 200명",
     "resultSub": "첫 야간 대회 무사고 운영 — 야간 운영 노하우의 사내 자산화",
-    "problem": "첫 개최이자 사(社) 최초의 야간 대회 — 시야 확보·코스 이탈·저체온 등 <strong>야간 특유의 안전 리스크</strong>, 그리고 <strong>선례 부재로 리스크의 규모조차 가늠하기 어려운 상황</strong>.",
-    "solution": "국내외 야간 트레일 대회 레퍼런스 수집과 관계자 자문을 통한 <strong>야간 코스마킹 체계 신규 도입</strong> — 중국 생산업체와의 별도 협의로 야간 반사 기물을 제작·설치하고, <strong>야광 반사 테이프를 결합한 코스마킹 테이프</strong>를 견적 단계부터 협의해 자체 제작. <strong>위험구간별 스태프 배치·관리 시스템</strong> 구축·운영.",
-    "result": "참가자 <strong>1,500명 규모 첫 야간 대회의 무사고 완주</strong>. 야간 대회 운영 노하우의 사내 자산화.",
+    "problem": "<span class='li'>당사 최초로 개최되는 야간 대회로, <strong>사내 레퍼런스 부재에 따른 리스크 예측 및 규모 산정의 어려움</strong> 직면</span><span class='li'>시야 확보 제한, 코스 이탈, 저체온증 등 <strong>야간 환경 특유의 높은 안전 리스크</strong> 가중</span>",
+    "solution": "<span class='li'>국내외 야간 대회 레퍼런스 수집 및 전문가 자문을 바탕으로 <strong>'야간 안전·운영 체계' 신규 기획 및 도입</strong></span><span class='li'>해외 생산업체와의 직접 협의를 통해 <strong>야간 반사 기물 및 야광 코스 마킹 테이프 등 야간 특수 물자 자체 기획 및 조달</strong></span><span class='li'>사전 코스 분석을 통한 <strong>위험 구간별 맞춤형 스태프 배치</strong> 및 현장 안전 관리 시스템 구축</span>",
+    "result": "<span class='li'>참가자 <strong>1,500명 규모의 첫 야간 대회 무사고 안전 운영 완수</strong></span><span class='li'><strong>야간 특수 목적 행사 기획 및 안전 관리 노하우의 성공적인 사내 자산화</strong> 달성</span>",
     "assets": [
       { "type": "gallery", "tab": "야간 설치 기물", "items": [
         { "src": "assets/nightrun-marking-tape.jpg", "cap": "야광 반사 테이프를 결합해 별도 제작을 발주한 야간 코스마킹 테이프" },
@@ -732,16 +734,18 @@
     "period": "2026.01 – 2026.04",
     "scale": "참가자 1,700명",
     "ready": true,
+    "major": true,
     "rnr": "클라이언트사(코오롱스포츠) 실무 소통 총괄 · 행사 운영 실무 총괄",
-    "tease": "대기업의 겹겹의 의사결정 구조 — 일정 지연 없이 어떻게 통과했을까?",
+    "tease": "복잡한 의사결정 구조로 인한 리드타임 지연 리스크, '선제적 프로세스 전환'으로 돌파한 운영 전략",
+    "teaseCta": "상세 운영 전략 보기 →",
     "video": "BMrHNrFjOfQ",
     "localVideo": "videos/kolon-trail-run-2026.mp4",
     "desc": "코오롱스포츠 주최 대회의 운영 대행. 클라이언트 실무 소통 총괄로서 의사결정을 이끌어내는 제안 중심의 소통을 이끌고, 행사 운영 실무를 총괄했다.",
     "resultLabel": "참가자 1,700명 · 스태프 200명",
     "resultSub": "대기업 운영 대행 무사고 완수",
-    "problem": "대기업 클라이언트의 운영 대행 — <strong>다층의 의사결정·승인 구조</strong> 속에서 결정 번복과 회신 지연이 반복되며, <strong>전체 일정을 맞추지 못할 리스크</strong>가 점점 커지고 있었음.",
-    "solution": "클라이언트의 의사결정이 늦어질 때는 <strong>초안을 먼저 만들어 제안하는 방식</strong>으로 전환 — 행사장 배치안 등 결정이 필요한 사안을 시각화해 선제 제시하고, 이를 논의의 기준점으로 삼아 <strong>클라이언트의 피드백과 의사결정을 이끌어냄</strong>. 결정 대기 항목과 자체 진행 항목을 분리해 <strong>의사결정 지연이 전체 준비를 멈추지 못하도록 운영</strong>.",
-    "result": "참가자 <strong>1,700명 대회 무사고 운영</strong>. 대기업 프로세스 이해 기반의 <strong>운영 대행 역량 검증</strong>.",
+    "problem": "<span class='li'>대기업 클라이언트 행사 운영 대행 중, <strong>다층적 의사결정 및 승인 구조</strong>로 인한 잦은 결정 번복과 회신 지연 발생</span><span class='li'>프로젝트 전체 리드타임 지연 및 <strong>행사 일정 차질을 초래할 수 있는 중대 리스크</strong> 직면</span>",
+    "solution": "<span class='li'>클라이언트 승인 대기의 수동적 방식에서 탈피, <strong>기획 초안을 선제 제안하는 주도적 프로세스로 전환</strong></span><span class='li'>핵심 결정 사항의 <strong>사전 시각화</strong> 및 명확한 논의점 제공으로 신속한 피드백과 의사결정 유도</span><span class='li'><strong>'결정 대기 항목'과 '자체 진행 가능 항목'의 철저한 분리</strong>로 프로젝트의 중단 없는 효율적 전개 도모</span>",
+    "result": "<span class='li'>참가자 <strong>1,700명 규모 첫 대기업 운영 대행 행사 성공적 완수</strong></span><span class='li'>대기업의 복잡한 업무 프로세스에 대한 높은 이해도 및 유연한 위기 대처 능력 입증으로, <strong>대형 클라이언트 대상 운영 대행 역량 검증</strong></span>",
     "assets": [
       { "type": "img", "src": "assets/kolon-layout-draft.jpg", "tab": "배치안 초안", "cap": "의사결정을 이끌어내기 위해 선제 제안한 행사장 배치안·제작물 초안 문서" },
       { "type": "gallery", "tab": "행사장 전경", "items": [
@@ -759,7 +763,8 @@
     "major": true,
     "ready": true,
     "rnr": "해외 물자 소싱·물류 총괄 · 글로벌 스폰서십(중국 3M) 전담",
-    "tease": "언어도 프로세스도 다른 글로벌 브랜드 — 어떻게 전 참가자 협찬을 이끌어냈을까?",
+    "tease": "글로벌 파트너사와의 커뮤니케이션 한계를 극복하고 전 참가자 대상 대규모 협찬을 이끌어낸 협상 과정",
+    "teaseCta": "협업 및 성과 상세 보기 →",
     "video": "1m_3MEMLFQg",
     "localVideo": "videos/korea-snow-trail-2026.mp4",
     "desc": "겨울 설상 트레일 러닝 대회. 해외 물자 소싱·물류 전 과정과 글로벌 브랜드(중국 3M) 스폰서십 커뮤니케이션을 전담했다.",
@@ -806,16 +811,17 @@
     "major": true,
     "ready": true,
     "home": true,
-    "tease": "여러 대회가 동시에, 이끌 사람은 부족 — 이 대회는 어떻게 무사히 치러졌을까?",
+    "tease": "복수의 프로젝트 동시 진행 리스크를 통제하여, 최대 규모 대회 성료 및 타 프로젝트의 지연·누락 없는 완수를 이끌어낸 통합 관리 체계",
+    "teaseCta": "상세 운영 전략 보기 →",
     "rnr": "행사 VENUE 기획 운영 총괄 및 전체 행사 실무 운영 기획",
     "video": "L07F4GjIcGY",
     "localVideo": "videos/dynafit-taebaek-2025.mp4",
     "desc": "국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했다.",
     "resultLabel": "참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
     "resultSub": "통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반",
-    "problem": "회사가 빠르게 성장하며 복수의 대회를 준비해야 했지만, 실무 인원에 비해 프로젝트 전체를 이끌 매니저 직무의 인원은 부족하여 업무가 과중, <strong>리드타임 관리와 세부 업무 팔로우업의 누락 리스크</strong>가 점점 커지고 있었음.",
-    "solution": "모든 대회에 공통으로 들어가는 필수 일정과 대회별 세부 일정을 분리하여 추출하고, 이를 바탕으로 <strong>복수의 대회를 일괄적으로 준비하는 자체 시스템을 직접 기획 및 도입</strong>. 행사 준비 과정을 <strong>설치 / 물자 / 운영 / 디자인 4개 파트로 구조화</strong>하고 파트별 인력 배치·협업 체계를 갖춰 기존 방식의 리스크를 현저히 낮춤.",
-    "result": "당시 최대 규모였던 다이나핏 태백 트레일의 성료 — <strong>참가자 3,300명·스태프 150명(전년 대비 +50%)</strong> — 와 함께 <strong>차기 대회 모객 목표 4,200명 상향</strong>에 기여 및 동시에 준비되는 프로젝트들의 세부 내용까지 <strong>누락 없이 관리</strong>.",
+    "problem": "<span class='li'>회사의 급격한 성장으로 복수 대회의 동시 준비가 필요했으나, 실무진 대비 프로젝트 총괄 PM 인력 부족으로 <strong>업무 병목 현상 발생</strong></span><span class='li'>이로 인한 <strong>전체 리드타임 지연 및 세부 업무 누락 리스크 가중</strong></span>",
+    "solution": "<span class='li'>대회별 공통 필수 일정과 세부 일정을 분리, 다중 프로젝트의 일괄 관리가 가능한 <strong>'통합 업무 관리 시스템' 직접 기획 및 도입</strong></span><span class='li'>행사 준비 과정을 <strong>4개 파트(설치·물자·운영·디자인)로 구조화</strong>하고 전담 인력 배치 및 협업 프로세스를 구축하여 기존 운영 방식의 리스크 최소화</span>",
+    "result": "<span class='li'>당시 최대 규모 '다이나핏 태백 트레일' 성공적 개최 (<strong>참가자 3,300명, 스태프 150명 / 전년 대비 50% 증가</strong>)</span><span class='li'><strong>차기 대회 모객 목표 4,200명 상향 기여</strong> 및 동시 진행 타 프로젝트의 세부 일정 누락 없이 안정적 완수.</span>",
     "assets": [
       {
         "type": "frame",
@@ -1180,6 +1186,7 @@ function armTeaser(){
     if(idx!==current)return;
     if(document.body.classList.contains("focus-mode"))return;
     document.getElementById("teaser-text").textContent=p.tease;
+    document.getElementById("teaser-go").innerHTML=p.teaseCta?p.teaseCta.replace("→","&rarr;"):"해결 과정 보기 &rarr;";
     document.getElementById("teaser").classList.add("show");
     teaserSeen[idx]=true;
   }, introDone?4000:INTRO_MIN+4500);
