@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>판매 추이 트래커</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onerror="document.write('\x3Cscript src=&quot;https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js&quot;\x3E\x3C/script\x3E')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" onerror="document.write('\x3Cscript src=&quot;https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js&quot;\x3E\x3C/script\x3E')"></script>
+<style>
+  :root{
+    /* V-V design studio — black bar, teal accent, hairline greys, lots of white */
+    --black: #000000;
+    --teal: #29C2AE;
+    --teal-dim: #1fa694;
+    --ink: #2b2b2b;
+    --muted: #999999;
+    --line: #e5e5e5;
+    --line-strong: #cccccc;
+    --bg: #ffffff;
+    --paper: #fafafa;
+    --card: #ffffff;
+    --good: #29C2AE;
+    --bad: #d0453b;
+    --charcoal: #2b2b2b;
+    --slate: #7a7a7a;
+    --ivory: #ffffff;
+    --trail: #29C2AE;
+    --trail-dark: #000000;
+    --flag: #29C2AE;
+    --flag-soft: #eefbf8;
+    --checkpoint: #000000;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Noto Sans KR', Arial, sans-serif;
+    padding:0 0 90px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+
+  /* ---- Black masthead ---- */
+  header.hero{
+    background:var(--black);
+    color:#ffffff;
+    margin:0 -28px 46px;
+    padding:30px 28px 32px;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:12.5px; letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--teal); font-weight:700; margin-bottom:14px;
+  }
+  h1{
+    font-size:44px; margin:0; letter-spacing:-0.015em;
+    font-weight:300; color:#ffffff; line-height:1.1;
+  }
+  .sub{color:#9a9a9a; font-size:13.5px; max-width:560px; line-height:1.6; margin-top:10px;}
+
+  /* ---- Panels: squared off, hairline rules ---- */
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:0;
+    padding:26px 28px;
+    margin-bottom:22px;
+  }
+  .panel h2{
+    font-size:14px; margin:0; letter-spacing:0.14em; text-transform:uppercase;
+    font-weight:700; color:var(--ink);
+    display:flex; align-items:center; gap:10px;
+    padding-bottom:16px; border-bottom:1px solid var(--line);
+  }
+  .panel .desc{color:var(--muted); font-size:12.5px; margin:16px 0 18px; line-height:1.65;}
+  .collapse-btn{
+    margin-left:auto; border:1px solid var(--line-strong); background:transparent;
+    color:var(--muted); width:26px; height:26px; border-radius:0;
+    cursor:pointer; font-size:10px; line-height:1; flex-shrink:0;
+    transition:border-color .15s, color .15s;
+  }
+  .collapse-btn:hover{ border-color:var(--teal); color:var(--teal); }
+  .panel-body{ margin-top:18px; }
+  .panel-body.collapsed{ display:none; }
+
+  /* ---- Upload ---- */
+  .dropzone{
+    border:1px dashed var(--line-strong);
+    border-radius:0;
+    padding:44px 26px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    background:var(--paper);
+  }
+  .dropzone.drag{ border-color:var(--teal); background:var(--flag-soft); }
+  .dropzone .flag{ display:inline-block; font-size:20px; margin-bottom:12px; opacity:0.55; }
+  .dropzone p{margin:3px 0; font-size:12.5px; color:var(--muted);}
+  .dropzone .cta{
+    color:var(--ink); font-weight:700; text-transform:uppercase;
+    letter-spacing:0.12em; font-size:11.5px;
+  }
+  input[type=file]{display:none;}
+
+  .pending{ margin-top:18px; display:flex; flex-direction:column; gap:0; }
+  .pending-row{
+    display:flex; align-items:center; gap:14px;
+    border:none; border-bottom:1px solid var(--line); border-radius:0;
+    padding:14px 2px; background:transparent; font-size:12.5px;
+  }
+  .pending-row .bib{
+    background:var(--black); color:#fff; font-weight:700;
+    font-size:10px; border-radius:0; padding:5px 9px; white-space:nowrap;
+    letter-spacing:0.1em; text-transform:uppercase;
+  }
+  .pending-row.duplicate{ border-color:var(--line); background:#fdf6f5; }
+  .pending-row .bib.bib-dup{ background:var(--bad); color:#fff; }
+  .dup-note{ color:var(--bad); font-size:11.5px; font-weight:700; white-space:nowrap; }
+  .pending-row input[type=text]{
+    flex:1; border:1px solid var(--line); border-radius:0; padding:8px 10px;
+    font-size:12.5px; font-family:inherit; min-width:140px;
+  }
+  .pending-row .range{color:var(--muted); font-size:11.5px; white-space:nowrap;}
+  .pending-row .stat{white-space:nowrap; font-weight:700; font-size:12px;}
+
+  /* ---- Buttons: outlined rectangles, uppercase ---- */
+  .btn{
+    border:1px solid var(--line-strong); border-radius:0; padding:10px 20px;
+    font-size:11px; font-weight:700; cursor:pointer; background:transparent;
+    letter-spacing:0.12em; text-transform:uppercase; font-family:inherit;
+    color:var(--ink); transition:border-color .15s, color .15s, background .15s;
+  }
+  .btn-primary{ background:var(--black); color:#fff; border-color:var(--black); }
+  .btn-primary:hover{ background:var(--teal); border-color:var(--teal); }
+  .btn-ghost{ background:transparent; color:var(--muted); }
+  .btn-ghost:hover{ border-color:var(--ink); color:var(--ink); }
+  .btn-reset{ background:transparent; color:var(--bad); border-color:#e8c9c6; }
+  .btn-reset:hover{ border-color:var(--bad); }
+  .btn-danger{
+    background:transparent; color:var(--muted); border:1px solid var(--line);
+    padding:5px 11px; font-size:10px; border-radius:0; cursor:pointer;
+    letter-spacing:0.1em; text-transform:uppercase; font-family:inherit;
+  }
+  .btn-danger:hover{ color:var(--bad); border-color:var(--bad); }
+  .save-row{margin-top:20px; display:flex; justify-content:flex-end; gap:10px;}
+
+  /* ---- KPIs ---- */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-bottom:26px; border-left:1px solid var(--line);}
+  .kpi{
+    background:transparent; border:none; border-right:1px solid var(--line); border-radius:0;
+    padding:4px 20px 8px;
+  }
+  .kpis.kpi-hovered .kpi:nth-child(-n+3){ background:var(--flag-soft); }
+  .kpis.kpi-hovered .kpi:nth-child(-n+3) .label{ color:var(--teal-dim); }
+  .kpi .label{
+    font-size:11.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.14em; margin-bottom:10px; font-weight:700;
+  }
+  .kpi .value{font-size:26px; font-weight:300; letter-spacing:-0.02em; color:var(--ink);}
+  .kpi .delta{font-size:11px; margin-top:8px; font-weight:700; letter-spacing:0.04em;}
+  .up{color:var(--good);} .down{color:var(--bad);} .flat{color:var(--muted);}
+
+  canvas{max-width:100%;}
+
+  /* ---- Tables: hairline rules, uppercase heads ---- */
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{text-align:left; padding:13px 10px; border-bottom:1px solid var(--line);}
+  th{
+    color:var(--muted); font-weight:700; font-size:11.5px;
+    text-transform:uppercase; letter-spacing:0.14em;
+    border-bottom:1px solid var(--line-strong);
+  }
+  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
+  tr:last-child td{border-bottom:1px solid var(--line);}
+  .bib-cell{
+    display:inline-block; background:transparent; color:var(--ink);
+    border:1px solid var(--line-strong);
+    font-weight:700; font-size:10px; border-radius:0; padding:4px 9px;
+    letter-spacing:0.1em; margin-right:6px;
+  }
+
+  /* ---- Ranking ---- */
+  .rank-grid{display:grid; grid-template-columns:1fr; gap:0;}
+  .rank-period{border:none; border-top:1px solid var(--line); border-radius:0; padding:22px 0 6px;}
+  .rank-period:first-child{border-top:none; padding-top:0;}
+  .rank-period h3{
+    font-size:12.5px; margin:0 0 16px; color:var(--ink);
+    display:flex; align-items:center; gap:8px;
+    letter-spacing:0.12em; text-transform:uppercase; font-weight:700;
+  }
+  .rank-list{list-style:none; margin:0; padding:0; font-size:12.5px;}
+  .rank-list li{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);}
+  .rank-list li:last-child{border-bottom:none;}
+  .rank-list .pname{color:var(--ink); max-width:70%;}
+  .rank-list .pqty{color:var(--muted); font-variant-numeric:tabular-nums;}
+  .rank-list .pname-btn{
+    background:none; border:none; padding:0; text-align:left; cursor:pointer;
+    color:var(--ink); font-size:12.5px; font-weight:500; font-family:inherit;
+    border-bottom:1px solid transparent; transition:color .15s, border-color .15s;
+  }
+  .rank-list .pname-btn:hover{ color:var(--teal); border-bottom-color:var(--teal); }
+
+  .rank-list-bars li.rank-bar-row{
+    display:flex; align-items:center; gap:20px; padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .rank-list-bars li.rank-bar-row:last-child{ border-bottom:none; }
+  .rank-list-bars .pname-btn{
+    flex:1 1 45%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .rank-bar-wrap{ flex:1 1 55%; min-width:120px; }
+  .rank-bar-track{
+    background:#f0f0f0; border-radius:0; height:8px; overflow:hidden;
+    display:flex; justify-content:flex-end;
+  }
+  .rank-bar-fill{ background:var(--black); height:100%; border-radius:0; min-width:2px; }
+  .rank-bar-row:hover .rank-bar-fill{ background:var(--teal); }
+  .rank-bar-labels{
+    display:flex; justify-content:flex-end; gap:12px;
+    margin-top:6px; font-size:10.5px; font-variant-numeric:tabular-nums;
+    letter-spacing:0.06em;
+  }
+  .rank-pct{ font-weight:700; color:var(--ink); }
+  .rank-amt{ color:var(--muted); }
+
+  /* ---- Modal ---- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:56px 20px; z-index:100; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-card{
+    background:var(--card); border-radius:0; max-width:680px; width:100%;
+    padding:34px 36px 36px; position:relative;
+  }
+  .modal-close{
+    position:absolute; top:20px; right:20px; border:1px solid var(--line-strong);
+    background:transparent; width:30px; height:30px; border-radius:0; cursor:pointer;
+    font-size:13px; color:var(--muted);
+  }
+  .modal-close:hover{ color:var(--ink); border-color:var(--ink); }
+  .modal-title{
+    font-size:23px; font-weight:300; margin:0 0 8px; padding-right:36px;
+    letter-spacing:-0.01em;
+  }
+  .modal-sub{font-size:12px; color:var(--muted); margin-bottom:22px; line-height:1.6;}
+
+  /* Filter-tab style toggle, per the reference site */
+  .granularity-toggle{ display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+  .granularity-toggle button{
+    border:1px solid transparent; background:transparent; color:var(--muted);
+    font-size:11px; font-weight:700; padding:9px 16px; border-radius:0;
+    cursor:pointer; font-family:inherit;
+    letter-spacing:0.1em; text-transform:uppercase;
+    transition:color .15s, border-color .15s;
+  }
+  .granularity-toggle button:hover{ color:var(--ink); }
+  .granularity-toggle button.active{
+    border-color:var(--ink); color:var(--ink); background:transparent;
+  }
+
+  .modal-section{ margin-top:24px; border-top:1px solid var(--line); padding-top:20px; }
+  .modal-section-head{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:transparent; border:1px solid var(--line-strong); border-radius:0;
+    padding:12px 14px; cursor:pointer; font-family:inherit;
+    font-size:12px; font-weight:700; color:var(--ink);
+    letter-spacing:0.12em; text-transform:uppercase;
+    transition:border-color .15s, color .15s;
+  }
+  .modal-section-head:hover{ border-color:var(--teal); color:var(--teal); }
+  .modal-section-head .chev{ color:var(--muted); font-size:10px; }
+  .modal-section-body{ margin-top:18px; }
+  .modal-section-body.collapsed{ display:none; }
+
+  select{ border-radius:0 !important; font-family:inherit; }
+
+  .empty{text-align:center; padding:52px 16px; color:var(--muted); font-size:12.5px; line-height:1.8;}
+  .empty .flag{font-size:22px; display:block; margin-bottom:12px; opacity:0.4;}
+
+  .footer-note{
+    font-size:10.5px; color:var(--muted); text-align:center; margin-top:38px;
+    line-height:1.9; letter-spacing:0.06em; text-transform:uppercase;
+  }
+
+
+  /* ---- Report panel: four tiers of descending emphasis ---- */
+  #reportContent{ font-size:13px; line-height:1.6; }
+  .rp-head{ padding:4px 0 22px; border-bottom:1px solid var(--line); }
+  .rp-head-label{
+    font-size:11px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.14em; font-weight:700; margin-bottom:12px;
+  }
+  .rp-vs{ margin-left:10px; border:1px solid var(--line); padding:2px 8px; letter-spacing:0.05em; }
+  .rp-warn{
+    margin-top:14px; font-size:11.5px; color:var(--bad);
+    border-left:2px solid var(--bad); padding:6px 0 6px 12px; line-height:1.6;
+  }
+  .rp-warn strong{ font-weight:700; }
+  .rp-head-value{ font-size:44px; font-weight:300; letter-spacing:-0.025em; line-height:1.05; }
+  .rp-delta{ font-size:15px; font-weight:700; margin-left:12px; letter-spacing:0.02em; vertical-align:middle; }
+
+  .rp-stats{ display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--line); }
+  .rp-stat{ padding:20px 22px 20px 0; border-right:1px solid var(--line); }
+  .rp-stat:last-child{ border-right:none; }
+  .rp-stat-label{
+    font-size:10.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.12em; font-weight:700; margin-bottom:8px;
+  }
+  .rp-stat-value{ font-size:21px; font-weight:300; letter-spacing:-0.01em; }
+  .rp-stat-value .rp-delta{ font-size:12px; margin-left:8px; }
+  .rp-sub{ display:block; font-size:11px; color:var(--muted); margin-top:5px; letter-spacing:0.02em; }
+
+  .rp-block{ padding:20px 0; border-bottom:1px solid var(--line); }
+  .rp-block-title{
+    font-size:10.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.12em; font-weight:700; margin-bottom:14px;
+  }
+
+  .rp-mover{ display:flex; align-items:center; gap:12px; padding:7px 0; font-size:13px; }
+  .rp-mover-tag{
+    font-size:10px; font-weight:700; letter-spacing:0.1em; padding:3px 8px;
+    border:1px solid currentColor; flex-shrink:0;
+  }
+  .rp-mover-tag.up{ color:var(--good); } .rp-mover-tag.down{ color:var(--bad); }
+  .rp-mover-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rp-mover-num{ color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  .rp-prod{ display:flex; align-items:center; gap:14px; padding:8px 0; font-size:13px; }
+  .rp-prod-rank{
+    width:20px; height:20px; flex-shrink:0; font-size:10px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line-strong); color:var(--muted);
+  }
+  .rp-prod-name{ flex:1 1 40%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rp-prod-bar{ flex:1 1 30%; height:6px; background:#f0f0f0; display:block; min-width:60px; }
+  .rp-prod-bar span{ display:block; height:100%; background:var(--black); }
+  .rp-prod-num{
+    width:110px; text-align:right; flex-shrink:0; font-weight:700; font-size:12.5px;
+    font-variant-numeric:tabular-nums;
+  }
+  .rp-prod-num .rp-sub{ font-weight:400; }
+
+  .rp-details{ padding:18px 0 0; font-size:12px; color:var(--muted); line-height:2; }
+  .rp-details strong{ color:var(--ink); font-weight:700; }
+  .rp-dot{ margin:0 10px; opacity:0.45; }
+  .rp-foot{
+    font-size:10.5px; color:var(--muted); margin-top:16px;
+    padding-top:14px; border-top:1px solid var(--line); letter-spacing:0.05em;
+  }
+
+
+  /* ---- Promotion ROI ---- */
+  .promo-form{ border:1px solid var(--line); padding:20px 22px; margin-bottom:22px; background:var(--paper); }
+  .promo-form-row{ display:flex; gap:16px; margin-bottom:14px; flex-wrap:wrap; }
+  .promo-form-row:last-child{ margin-bottom:0; }
+  .promo-field{ flex:1; min-width:150px; display:flex; flex-direction:column; }
+  .promo-field label{
+    font-size:10px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.12em; font-weight:700; margin-bottom:7px;
+  }
+  .promo-field input{
+    border:1px solid var(--line-strong); border-radius:0; padding:10px 12px;
+    font-size:13px; font-family:inherit; background:#fff;
+  }
+  .promo-field input:focus{ outline:none; border-color:var(--ink); }
+  .promo-suggest{
+    position:absolute; top:100%; left:0; right:0; z-index:50;
+    background:#fff; border:1px solid var(--ink); border-top:none;
+    max-height:240px; overflow-y:auto;
+  }
+  .promo-suggest button{
+    display:block; width:100%; text-align:left; background:none; border:none;
+    padding:10px 12px; font-size:12.5px; font-family:inherit; cursor:pointer;
+    border-bottom:1px solid var(--line); color:var(--ink);
+  }
+  .promo-suggest button:last-child{ border-bottom:none; }
+  .promo-suggest button:hover{ background:var(--flag-soft); color:var(--teal-dim); }
+  .promo-suggest .hl{ font-weight:700; color:var(--teal-dim); }
+  .promo-suggest .sg-meta{
+    display:block; font-size:10.5px; color:var(--muted); margin-top:3px; letter-spacing:0.05em;
+  }
+
+  .promo-auto-period{
+    border:1px dashed var(--line-strong); padding:11px 13px; font-size:12.5px;
+    color:var(--muted); background:#fff; min-height:41px; line-height:1.5;
+  }
+  .promo-auto-period.found{ color:var(--ink); border-style:solid; border-color:var(--teal); }
+  .promo-auto-period strong{ font-weight:700; }
+  .promo-card{ border:1px solid var(--line); padding:24px 26px; margin-bottom:18px; }
+  .promo-card-head{ display:flex; align-items:flex-start; gap:14px; margin-bottom:6px; }
+  .promo-card-title{ font-size:16px; font-weight:700; flex:1; line-height:1.4; }
+  .promo-card-period{ font-size:11px; color:var(--muted); letter-spacing:0.05em; margin-bottom:18px; }
+  .promo-roi-row{ display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); margin-bottom:20px; }
+  .promo-roi-cell{ padding:16px 18px; border-right:1px solid var(--line); }
+  .promo-roi-cell:last-child{ border-right:none; }
+  .promo-roi-cell .lab{
+    font-size:10px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.12em; font-weight:700; margin-bottom:8px;
+  }
+  .promo-roi-cell .val{ font-size:22px; font-weight:300; letter-spacing:-0.01em; }
+  .promo-roi-cell .val.up{ color:var(--good); font-weight:700; }
+  .promo-roi-cell .val.down{ color:var(--bad); font-weight:700; }
+  .promo-roi-cell .sub{ font-size:11px; color:var(--muted); margin-top:5px; }
+  .promo-sub-total td{ background:var(--paper); font-weight:700; color:var(--ink); }
+  .promo-sub-total td:nth-child(2){ color:var(--muted); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
+  .promo-detail{ font-size:12.5px; line-height:2; color:var(--ink); margin-bottom:16px; }
+  .promo-detail strong{ font-weight:700; }
+  .promo-warn{ font-size:11.5px; color:var(--bad); border-left:2px solid var(--bad); padding:5px 0 5px 11px; margin-bottom:14px; line-height:1.6; }
+  @media (max-width:760px){ .promo-roi-row{ grid-template-columns:repeat(2,1fr); } .promo-roi-cell{ border-bottom:1px solid var(--line); } }
+
+  /* ---- Cursor-following chart tooltip ---- */
+  #chartTip{
+    position:fixed; pointer-events:none; z-index:200; display:none;
+    background:rgba(0,0,0,0.88); color:#fff; padding:10px 13px;
+    font-size:11.5px; line-height:1.7; letter-spacing:0.02em;
+    white-space:nowrap; border-radius:0;
+  }
+  #chartTip .tip-title{
+    font-size:10px; text-transform:uppercase; letter-spacing:0.12em;
+    color:#9a9a9a; margin-bottom:6px; font-weight:700;
+  }
+  #chartTip .tip-row{ display:flex; align-items:center; gap:8px; }
+  #chartTip .tip-row.dim{ opacity:0.55; }
+  #chartTip .tip-key{ width:8px; height:8px; flex-shrink:0; }
+  #chartTip .tip-val{ font-weight:700; margin-left:auto; padding-left:14px; }
+
+  @media (max-width:760px){
+    .rp-head-value{ font-size:32px; }
+    .rp-stats{ grid-template-columns:1fr; }
+    .rp-stat{ border-right:none; border-bottom:1px solid var(--line); padding:16px 0; }
+    .rp-prod-bar{ display:none; }
+  }
+
+  @media print{
+    body{ padding:0; background:#fff; }
+    header.hero{ background:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; margin-bottom:20px; }
+    .panel{ border:none; border-top:1px solid #ccc; padding:16px 0; margin-bottom:0; page-break-inside:avoid; }
+    .panel-body.collapsed{ display:block !important; }
+    #storageBanner, .dropzone, .pending, .save-row, .collapse-btn, .btn, .btn-danger, .modal-overlay,
+    #rankRangeToggle, #rankCustomRange, .promo-form, .modal-section, .granularity-toggle,
+    .promo-suggest, #chartTip, .footer-note{ display:none !important; }
+    .panel:first-of-type{ display:none; }  /* upload panel isn't part of a report */
+  }
+
+  @media (max-width:760px){
+    .kpis{grid-template-columns:repeat(2,1fr); border-left:none;}
+    .kpi{border-right:none; border-bottom:1px solid var(--line); padding:16px 0;}
+    header.hero{padding:26px 20px 28px; margin:0 -20px 34px;}
+    .wrap{padding:0 20px;}
+    h1{font-size:32px;}
+    .panel{padding:22px 20px;}
+    .modal-card{padding:28px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Weekly Sales Report</div>
+    <h1>판매 추이 트래커</h1>
+    <div id="storageBanner" style="margin-top:20px; font-size:11px; padding:9px 14px; border-radius:0; display:inline-flex; align-items:center; gap:8px; line-height:1.5; max-width:640px;"></div>
+  </header>
+
+  <div id="demoBanner" style="display:none; margin:0 0 22px; padding:12px 16px; border:1.5px dashed var(--teal, #1c7c74); border-radius:8px; background:rgba(28,124,116,.06); font-size:13.5px; line-height:1.65;">
+    <strong style="color:var(--teal, #1c7c74)">🧪 데모 데이터가 자동으로 반영되어 있습니다.</strong>
+    가상 브랜드 <strong>SUMMITLINE</strong>의 무작위 생성 주문 데이터(3주분 CSV)입니다.
+    카페24 주문 파일을 올리면 아래처럼 주간 리포트·상품 순위·시간대 분석이 자동 생성됩니다.
+  </div>
+
+  <div class="panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:14px 20px;">
+    <div style="font-size:12.5px; color:var(--muted);">Data backup</div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-ghost" id="exportBtn">내보내기</button>
+      <button class="btn btn-ghost" id="importBtn">가져오기</button>
+      <button class="btn btn-reset" id="resetBtn">전체 초기화</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>① 판매 데이터 올리기 (CSV/엑셀)<button class="collapse-btn" data-target="body1" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="body1">
+    <div class="desc">카페24에서 내려받은 주문 파일(CSV 또는 엑셀)을 그대로 올려주세요. "발주일" 열만 있으면 됩니다. 여러 파일을 한 번에 올려도 되고, 파일 경계와 상관없이 발주일 기준으로 자동으로 주간 단위로 묶입니다.</div>
+    <div class="dropzone" id="dropzone">
+      <span class="flag">↑</span>
+      <p><span class="cta">클릭해서 파일 선택</span> 또는 여기로 드래그 앤 드롭</p>
+      <p style="font-size:12px;">.csv / .xlsx 파일, 여러 개 선택 가능 — 카페24에서 받은 엑셀을 그대로 올리셔도 됩니다</p>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" multiple>
+    </div>
+    <div class="pending" id="pendingArea"></div>
+    <div class="pending" id="pendingDailyArea"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="reportPanel" style="display:none;">
+    <h2>② 리포트 요약<button class="collapse-btn" data-target="bodyReport" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="bodyReport">
+    <div class="desc">최신 데이터를 기준으로 자동 생성된 보고용 요약입니다. "요약 복사"는 메신저·이메일에 바로 붙여넣을 수 있는 텍스트를 복사합니다.</div>
+    <div id="reportContent" style="font-size:13.5px; line-height:2.0;"></div>
+    <div class="save-row" style="justify-content:flex-start; margin-top:22px;">
+      <button class="btn btn-primary" id="copyReportBtn">요약 복사</button>
+      <button class="btn btn-ghost" id="printReportBtn">인쇄 / PDF 저장</button>
+    </div>
+    </div>
+  </div>
+
+  <div class="panel" id="promoPanel" style="display:none;">
+    <h2>③ 프로모션 ROI<button class="collapse-btn" data-target="bodyPromo" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="bodyPromo">
+    <div class="desc">상품명에 포함된 프로모션 문구로 해당 주문을 자동 분리하고, 그 구매자의 이후 재구매까지 추적해 ROI를 계산합니다. 프로모션 기간은 실제 판매가 발생한 첫날~마지막날로 자동 설정됩니다. 구매자 연락처는 해시로만 저장되며 원문은 남지 않습니다.</div>
+
+    <div class="promo-form">
+      <div class="promo-form-row">
+        <div class="promo-field" style="flex:2; position:relative;">
+          <label>프로모션 식별 문구 (상품명에 포함된 워딩)</label>
+          <input type="text" id="promoKeyword" placeholder="" autocomplete="off">
+          <div id="promoSuggest" class="promo-suggest" style="display:none;"></div>
+        </div>
+        <div class="promo-field">
+          <label>프로모션 비용 (원)</label>
+          <input type="text" id="promoCost" placeholder="2,000,000 원" inputmode="numeric" autocomplete="off">
+        </div>
+      </div>
+      <div class="promo-form-row" style="align-items:flex-end;">
+        <div class="promo-field" style="flex:2;">
+          <label>프로모션 기간</label>
+          <div id="promoPeriodPreview" class="promo-auto-period">식별 문구를 입력하면 판매 발생일 기준으로 자동 설정됩니다.</div>
+        </div>
+        <div class="promo-field" style="flex:0 0 auto;">
+          <button class="btn btn-primary" id="promoAddBtn">프로모션 등록</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="promoCards"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="trendPanel" style="display:none;">
+    <h2>④ 매출 추이<button class="collapse-btn" data-target="body2" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="body2">
+    <div class="desc">발주일을 기준으로 자동으로 주(월요일 시작) 단위로 묶어 비교합니다.</div>
+    <div class="kpis" id="kpiRow"></div>
+    <canvas id="trendChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <div class="panel" id="dailyProductPanel" style="display:none;">
+    <h2>⑤ 상품별 판매 순위<button class="collapse-btn" data-target="body9" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="body9">
+    <div class="desc">판매 금액 기준입니다. 상품명을 클릭하면 그 상품의 일별·주간별·시간별 추이를 볼 수 있습니다.</div>
+    <div class="granularity-toggle" id="rankRangeToggle">
+      <button data-range="all" class="active">전체 기간</button>
+      <button data-range="last1">최근 1주</button>
+      <button data-range="last4">최근 4주</button>
+      <button data-range="custom">기간 지정</button>
+    </div>
+    <div id="rankCustomRange" style="display:none; margin-bottom:18px; font-size:12px; color:var(--muted); align-items:center; gap:8px; flex-wrap:wrap;">
+      <span>시작</span>
+      <input type="date" id="rankStartDate" style="font-family:inherit; font-size:12px; padding:7px 9px; border:1px solid var(--line); border-radius:0;">
+      <span>종료</span>
+      <input type="date" id="rankEndDate" style="font-family:inherit; font-size:12px; padding:7px 9px; border:1px solid var(--line); border-radius:0;">
+      <button class="btn btn-ghost" id="rankRangeApply" style="padding:7px 14px;">적용</button>
+    </div>
+    <div id="rankRangeLabel" style="font-size:11px; color:var(--muted); margin-bottom:14px; letter-spacing:0.06em;"></div>
+    <ul class="rank-list" id="dailyProductRankList"></ul>
+    </div>
+  </div>
+
+  <div class="panel" id="tablePanel" style="display:none;">
+    <h2>⑥ 주차별 요약<button class="collapse-btn" data-target="body3" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="body3">
+    <div class="desc">직전 주 대비 증감률입니다.</div>
+    <div style="overflow-x:auto;">
+      <table id="summaryTable">
+        <thead>
+          <tr>
+            <th>주차</th><th>기간</th>
+            <th class="num">매출</th><th class="num">전주비</th>
+            <th class="num">주문건수</th><th class="num">평균 객단가</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+
+  <div class="panel" id="rankPanel" style="display:none;">
+    <h2>⑦ 주차별 상품 판매 순위 (판매 금액 기준)<button class="collapse-btn" data-target="body4" aria-expanded="true">▾</button></h2>
+    <div class="panel-body" id="body4">
+    <div class="rank-grid" id="rankGrid"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="paymentPanel" style="display:none;">
+    <h2>⑧ 결제수단(구매방식)별 현황<button class="collapse-btn" data-target="body5" aria-expanded="false">▸</button></h2>
+    <div class="panel-body collapsed" id="body5">
+    <div class="desc">신용카드/무통장입금/가상계좌/계좌이체 등, 주문번호 기준 중복 제거 후 집계했습니다.</div>
+    <div style="overflow-x:auto;">
+      <table id="paymentTable">
+        <thead>
+          <tr><th>주차</th><th>결제수단</th><th class="num">주문건수</th><th class="num">비중</th><th class="num">매출</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+
+  <div class="panel" id="refundPanel" style="display:none;">
+    <h2>⑨ 취소/환불 추이<button class="collapse-btn" data-target="body6" aria-expanded="false">▸</button></h2>
+    <div class="panel-body collapsed" id="body6">
+    <div class="desc" id="refundDesc"></div>
+    <div id="refundContent"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="dailyTrendPanel" style="display:none;">
+    <h2>⑩ 일자별 판매 추이<button class="collapse-btn" data-target="body7" aria-expanded="false">▸</button></h2>
+    <div class="panel-body collapsed" id="body7">
+    <div class="desc">상세 CSV(상품구매금액(KRW)/상품명/취소구분/발주일)에서 추출한 날짜별 매출입니다. 취소 건은 제외한 순매출 기준입니다.</div>
+    <div class="kpis" id="dailyKpiRow"></div>
+    <canvas id="dailyTrendChart" height="90"></canvas>
+    </div>
+  </div>
+
+  <div class="panel" id="dailyTablePanel" style="display:none;">
+    <h2>⑪ 일자별 요약<button class="collapse-btn" data-target="body8" aria-expanded="false">▸</button></h2>
+    <div class="panel-body collapsed" id="body8">
+    <div style="overflow-x:auto;">
+      <table id="dailySummaryTable">
+        <thead>
+          <tr><th>날짜</th><th class="num">순매출</th><th class="num">판매 수량</th><th class="num">취소 금액</th><th class="num">취소 건수</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+
+  <div class="panel" id="emptyPanel">
+    <div class="empty">
+      <span class="flag">—</span>
+      아직 저장된 데이터가 없습니다.<br>위에서 CSV를 올려 데이터를 저장해보세요.
+    </div>
+  </div>
+
+  <div class="footer-note">저장된 데이터는 이 기기의 이 브라우저에만 보관됩니다 · 업로드한 파일들의 발주일을 합쳐 자동으로 주간 단위로 집계합니다</div>
+</div>
+
+<div id="chartTip"></div>
+
+<div class="modal-overlay" id="dailyProductModal">
+  <div class="modal-card">
+    <button class="modal-close" id="dailyProductModalClose">✕</button>
+    <div class="modal-title" id="dailyProductModalTitle"></div>
+    <div class="modal-sub" id="dailyProductModalSub"></div>
+    <div class="granularity-toggle" id="dailyProductModalGranularity">
+      <button data-gran="daily" class="active">일별</button>
+      <button data-gran="weekly">주간별</button>
+      <button data-gran="hourly">시간별</button>
+    </div>
+    <div id="dailyProductModalDatePicker" style="display:none; margin-bottom:12px; font-size:12.5px; color:var(--muted);">
+      날짜 선택:
+      <select id="dailyProductModalDateSelect" style="font-family:inherit; font-size:12.5px; padding:5px 8px; border:1px solid var(--line); border-radius:6px; margin-left:6px;"></select>
+    </div>
+    <canvas id="dailyProductModalChart" height="120"></canvas>
+    <div class="modal-section">
+      <button class="modal-section-head" data-target="dailyProductModalDetail" aria-expanded="false">
+        <span>세부 내역 보기</span><span class="chev">▸</span>
+      </button>
+      <div class="modal-section-body collapsed" id="dailyProductModalDetail">
+        <div style="overflow-x:auto;">
+          <table id="dailyProductModalTable">
+            <thead id="dailyProductModalTableHead"><tr><th>날짜</th><th class="num">판매 수량</th><th class="num">매출</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const fmtWon = n => '₩' + Math.round(n).toLocaleString('ko-KR');
+const fmtDate = d => {
+  const dt = new Date(d);
+  return `${dt.getMonth()+1}/${dt.getDate()}`;
+};
+const fmtPct = (cur, prev) => {
+  if(prev === null || prev === undefined || prev === 0) return null;
+  return ((cur - prev) / prev) * 100;
+};
+
+let chartInstance = null;
+let refundChartInstance = null;
+let currentWeeks = [];
+let pendingDaily = [];
+let currentDailyRecords = [];
+let dailyChartInstance = null;
+let dailyProductModalChartInstance = null;
+
+// ---------- Storage adapter ----------
+// window.storage only exists when this page is opened inside Claude's own
+// artifact viewer. When the file is downloaded and opened directly in a
+// browser (file://...), that API doesn't exist, so we fall back to
+// localStorage transparently. Data then lives in this browser, tied to this
+// exact file — use the export/import buttons to back it up or move it.
+const LS_PREFIX = 'trail_sales_tracker__';
+const usingClaudeStorage = (typeof window.storage !== 'undefined' && window.storage !== null);
+
+const storageAdapter = {
+  mode: usingClaudeStorage ? 'claude' : 'local',
+  async get(key){
+    if(usingClaudeStorage) return window.storage.get(key, false);
+    const raw = localStorage.getItem(LS_PREFIX + key);
+    if(raw === null) throw new Error('키를 찾을 수 없습니다: ' + key);
+    return { key, value: raw, shared: false };
+  },
+  async set(key, value){
+    if(usingClaudeStorage) return window.storage.set(key, value, false);
+    localStorage.setItem(LS_PREFIX + key, value);
+    return { key, value, shared: false };
+  },
+  async delete(key){
+    if(usingClaudeStorage) return window.storage.delete(key, false);
+    localStorage.removeItem(LS_PREFIX + key);
+    return { key, deleted: true, shared: false };
+  },
+  async list(prefix){
+    if(usingClaudeStorage) return window.storage.list(prefix, false);
+    const keys = [];
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith(LS_PREFIX)){
+        const real = k.slice(LS_PREFIX.length);
+        if(!prefix || real.startsWith(prefix)) keys.push(real);
+      }
+    }
+    return { keys, prefix, shared: false };
+  }
+};
+
+// ---------- CSV parsing & aggregation ----------
+
+// cafe24 exports don't always include a cancellation/claim column under the same
+// header name, so we scan every column and treat one as "cancel status" if its
+// values look like a small set that includes "취소함"/"취소" style labels.
+const CANCEL_TRUE_VALUES = ['취소함', '취소', '취소완료', '취소처리', 'Y', '환불'];
+const CANCEL_FALSE_VALUES = ['취소안함', '정상', '정상주문', 'N', ''];
+const KNOWN_COLUMNS = new Set(['쇼핑몰','쇼핑몰번호','주문번호','품목별 주문번호','배송메시지',
+  '총 주문금액','총 결제금액','상품번호','주문상품명','주문상품명(옵션포함)','수량','판매가',
+  '수령인','수령인 휴대전화','수령인 우편번호','수령인 주소','수령인 상세 주소','결제구분',
+  '결제수단','발주일','배송국가']);
+
+function detectCancelColumn(rows){
+  if(!rows.length) return null;
+  // Detailed exports name this column explicitly — trust it over the heuristic
+  // scan below, which can false-match other refund/claim status columns.
+  if('취소구분' in rows[0]) return '취소구분';
+  const headers = Object.keys(rows[0]).filter(h => !KNOWN_COLUMNS.has(h));
+  for(const h of headers){
+    const values = new Set(rows.map(r => (r[h] || '').toString().trim()).filter(v => v !== ''));
+    if(values.size === 0) continue;
+    const looksLikeCancelCol = Array.from(values).every(v =>
+      CANCEL_TRUE_VALUES.includes(v) || CANCEL_FALSE_VALUES.includes(v)
+    );
+    const hasTrueValue = Array.from(values).some(v => CANCEL_TRUE_VALUES.includes(v));
+    if(looksLikeCancelCol && hasTrueValue){
+      return h;
+    }
+  }
+  return null;
+}
+
+// ---------- Daily-format detection & aggregation ----------
+// From here on, some CSV exports only carry a handful of fields:
+// 상품구매금액(KRW), 상품명(한국어 쇼핑몰), 취소구분, 발주일 — this is the
+// "daily" format, aggregated by calendar day rather than by upload period.
+const DAILY_AMOUNT_COL = '상품구매금액(KRW)';
+const DAILY_NAME_COL = '상품명(한국어 쇼핑몰)';
+const DAILY_CANCEL_COL = '취소구분';
+const DAILY_DATE_COL = '발주일';
+
+// Contact info is personal data — store only a short irreversible hash, which
+// is all repeat-purchase matching needs.
+function hashBuyer(s){
+  let h = 5381;
+  for(const ch of s){ h = ((h << 5) + h + ch.charCodeAt(0)) | 0; }
+  return 'b' + (h >>> 0).toString(36);
+}
+const CONTACT_COLS = ['주문자 휴대전화','주문자휴대전화','주문자 연락처','수령인 휴대전화','주문자ID','주문자 이메일'];
+
+
+// A detailed CSV can additionally produce a file-level (weekly) summary only if
+// it carries the order-level fields that aggregate() relies on.
+
+function aggregateDaily(rows, fileName){
+  const first = rows[0] || {};
+  // Column names vary between cafe24 export templates, so resolve them once here.
+  const nameCol = DAILY_NAME_COL in first ? DAILY_NAME_COL
+    : ('상품명' in first ? '상품명' : '주문상품명');
+  const amountCol = DAILY_AMOUNT_COL in first ? DAILY_AMOUNT_COL
+    : ('상품구매금액' in first ? '상품구매금액' : null);
+  const dayMap = new Map();
+  let skippedCount = 0; // rows with missing/unparseable 발주일 — excluded from all totals below
+  // exports that don't use the standard 취소구분 header get a heuristic scan
+  const detectedCancelCol = DAILY_CANCEL_COL in first ? DAILY_CANCEL_COL : detectCancelColumn(rows);
+  const contactCol = CONTACT_COLS.find(c => c in first) || null;
+
+  rows.forEach(r => {
+    let dateStr = (r[DAILY_DATE_COL] || '').toString().trim();
+    if(!dateStr){ skippedCount++; return; }
+    // Excel files parsed via SheetJS can surface dates as "8/4/26 5:51" —
+    // normalize those to the ISO-like form the rest of the pipeline expects.
+    const usForm = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if(usForm){
+      let [, mo, da, yr, hh, mi, ss] = usForm;
+      yr = yr.length === 2 ? '20' + yr : yr;
+      dateStr = `${yr}-${mo.padStart(2,'0')}-${da.padStart(2,'0')} ${(hh||'0').padStart(2,'0')}:${(mi||'00')}:${(ss||'00')}`;
+    }
+    // read the calendar day straight off the string (e.g. "2026-08-04 05:51:31" -> "2026-08-04")
+    // rather than going through Date/toISOString, which converts to UTC and can
+    // push early-morning KST timestamps back a day.
+    const dayKey = dateStr.slice(0, 10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dayKey)){ skippedCount++; return; }
+
+    const qty = parseInt(r['수량']) || 1;
+    // fall back to 판매가 x 수량 when the export has no explicit purchase-amount column
+    const amount = amountCol
+      ? (parseFloat((r[amountCol] || '0').toString().replace(/,/g, '')) || 0)
+      : (parseFloat((r['판매가'] || '0').toString().replace(/,/g, '')) || 0) * qty;
+    const name = (r[nameCol] || '상품명 미상').trim() || '상품명 미상';
+    const cancelCol = DAILY_CANCEL_COL in first ? DAILY_CANCEL_COL : detectedCancelCol;
+    const cancelled = cancelCol ? CANCEL_TRUE_VALUES.includes((r[cancelCol] || '').trim()) : false;
+    const orderNo = (r['주문번호'] || '').trim();
+    const method = (r['결제수단'] || '미상').trim() || '미상';
+    const contactRaw = contactCol ? (r[contactCol] || '').toString().trim() : '';
+    const buyer = contactRaw ? hashBuyer(contactRaw) : null;
+    const hourKey = /^\d{4}-\d{2}-\d{2} \d{2}/.test(dateStr) ? parseInt(dateStr.slice(11, 13)) : NaN;
+
+    if(!dayMap.has(dayKey)){
+      dayMap.set(dayKey, { date: dayKey, revenue: 0, cancelledRevenue: 0, qty: 0, cancelledQty: 0,
+        lines: 0, products: new Map(), orders: new Map() });
+    }
+    const day = dayMap.get(dayKey);
+    day.lines += 1;
+    // one order can span several rows, so track it once for payment-method stats
+    if(orderNo){
+      if(!day.orders.has(orderNo)) day.orders.set(orderNo, { method, cancelled: false, amount: 0, buyer, items: [] });
+      const o = day.orders.get(orderNo);
+      o.amount += amount;
+      if(cancelled) o.cancelled = true;
+      if(!o.buyer && buyer) o.buyer = buyer;
+      // per-item lines let promotions attribute only their own products in mixed orders
+      o.items.push({ n: name, r: cancelled ? 0 : amount, q: qty, c: cancelled });
+    }
+    if(cancelled){
+      day.cancelledRevenue += amount;
+      day.cancelledQty += qty;
+    } else {
+      day.revenue += amount;
+      day.qty += qty;
+    }
+    if(!day.products.has(name)){
+      day.products.set(name, {
+        name, qty: 0, revenue: 0, cancelledQty: 0, cancelledRevenue: 0,
+        hourly: Array.from({length:24}, () => ({ qty: 0, revenue: 0 }))
+      });
+    }
+    const p = day.products.get(name);
+    if(cancelled){ p.cancelledQty += qty; p.cancelledRevenue += amount; }
+    else {
+      p.qty += qty;
+      p.revenue += amount;
+      if(!isNaN(hourKey) && hourKey >= 0 && hourKey <= 23){
+        p.hourly[hourKey].qty += qty;
+        p.hourly[hourKey].revenue += amount;
+      }
+    }
+  });
+
+  const days = Array.from(dayMap.values())
+    .map(d => {
+      const orders = Array.from(d.orders.values());
+      const methodMap = new Map();
+      orders.forEach(o => {
+        if(!methodMap.has(o.method)) methodMap.set(o.method, { count: 0, revenue: 0 });
+        const m = methodMap.get(o.method);
+        m.count += 1;
+        if(!o.cancelled) m.revenue += o.amount;
+      });
+      return {
+        date: d.date,
+        revenue: d.revenue, cancelledRevenue: d.cancelledRevenue,
+        qty: d.qty, cancelledQty: d.cancelledQty, lines: d.lines,
+        orderList: Array.from(d.orders.entries()).map(([id, o]) =>
+          ({ id, b: o.buyer, amt: o.amount, c: o.cancelled, items: o.items })),
+        orderCount: orders.length,
+        cancelledOrderCount: orders.filter(o => o.cancelled).length,
+        paymentMethods: Array.from(methodMap.entries())
+          .map(([method, v]) => ({ method, count: v.count, revenue: v.revenue })),
+        products: Array.from(d.products.values()).sort((a,b) => b.revenue - a.revenue)
+      };
+    })
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  return { fileName, days, skippedCount };
+}
+
+// Roll saved days up into ISO-style weeks (Monday start). Everything the
+// dashboard shows is derived from these, so uploads can span any file boundary.
+function buildWeeks(days){
+  const map = new Map();
+  days.forEach(d => {
+    const wk = getMondayKey(d.date);
+    if(!map.has(wk)){
+      map.set(wk, {
+        weekStart: wk, dates: [], revenue: 0, cancelledRevenue: 0, qty: 0, cancelledQty: 0,
+        orderCount: 0, cancelledOrderCount: 0,
+        productMap: new Map(), methodMap: new Map()
+      });
+    }
+    const w = map.get(wk);
+    w.dates.push(d.date);
+    w.revenue += d.revenue;
+    w.cancelledRevenue += d.cancelledRevenue;
+    w.qty += d.qty;
+    w.cancelledQty += d.cancelledQty;
+    w.orderCount += (d.orderCount || 0);
+    w.cancelledOrderCount += (d.cancelledOrderCount || 0);
+    (d.products || []).forEach(p => {
+      if(!w.productMap.has(p.name)) w.productMap.set(p.name, { name: p.name, qty: 0, revenue: 0 });
+      const t = w.productMap.get(p.name);
+      t.qty += p.qty; t.revenue += p.revenue;
+    });
+    (d.paymentMethods || []).forEach(m => {
+      if(!w.methodMap.has(m.method)) w.methodMap.set(m.method, { count: 0, revenue: 0 });
+      const t = w.methodMap.get(m.method);
+      t.count += m.count;
+      t.revenue += (m.revenue || 0);
+    });
+  });
+
+  return Array.from(map.values())
+    .sort((a,b) => a.weekStart.localeCompare(b.weekStart))
+    .map(w => {
+      const dates = w.dates.slice().sort();
+      const end = new Date(w.weekStart + 'T00:00:00');
+      end.setDate(end.getDate() + 6);
+      // build the string from local parts — toISOString() converts to UTC and
+      // would roll local midnight back a day in timezones ahead of UTC (e.g. KST).
+      const endStr = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2,'0')}-${String(end.getDate()).padStart(2,'0')}`;
+      return {
+        weekStart: w.weekStart,
+        weekEnd: endStr,
+        label: `${w.weekStart.slice(5).replace('-','/')} ~ ${endStr.slice(5).replace('-','/')}`,
+        firstDate: dates[0], lastDate: dates[dates.length-1], dayCount: dates.length,
+        revenue: w.revenue, cancelledRevenue: w.cancelledRevenue,
+        netRevenue: w.revenue,
+        qty: w.qty, cancelledQty: w.cancelledQty,
+        orderCount: w.orderCount, cancelledOrderCount: w.cancelledOrderCount,
+        avgOrder: w.orderCount ? w.revenue / w.orderCount : 0,
+        refundRate: w.orderCount ? (w.cancelledOrderCount / w.orderCount) * 100 : 0,
+        products: Array.from(w.productMap.values()).sort((a,b) => b.revenue - a.revenue),
+        paymentMethods: Array.from(w.methodMap.entries())
+          .map(([method, v]) => ({ method, count: v.count, revenue: v.revenue }))
+          .sort((a,b) => b.revenue - a.revenue)
+      };
+    });
+}
+
+
+
+// ---------- Upload handling ----------
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+
+
+// Both parsers hand their rows to this single ingest point, so xlsx and csv
+// behave identically from here on.
+function ingestRows(rows, headers, fileName){
+  if(!headers.includes(DAILY_DATE_COL)){
+    alert(fileName + ': "발주일" 열이 없어 주간 집계를 만들 수 없습니다.');
+    return;
+  }
+  const dailyAgg = aggregateDaily(rows, fileName);
+  pendingDaily.push(dailyAgg);
+  renderPendingDaily();
+}
+
+function handleFiles(fileList){
+  Array.from(fileList).forEach(file => {
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+
+    if(ext === 'xlsx' || ext === 'xls'){
+      if(typeof XLSX === 'undefined'){
+        alert('엑셀 파일 처리 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하거나 CSV로 변환해서 올려주세요.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try{
+          // cellDates:false + raw:false keeps 발주일 as its formatted string
+          // ("2026-08-04 05:51:31") instead of a JS Date, matching the CSV path.
+          const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: false });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+          if(!rows.length){ alert(file.name + ': 시트에 데이터가 없습니다.'); return; }
+          ingestRows(rows, Object.keys(rows[0]), file.name);
+        }catch(err){
+          alert(file.name + ' 엑셀 파일을 읽는 중 오류가 발생했습니다: ' + err.message);
+        }
+      };
+      reader.onerror = () => alert(file.name + ' 파일을 읽을 수 없습니다.');
+      reader.readAsArrayBuffer(file);
+      return;
+    }
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      encoding: 'UTF-8',
+      complete: (results) => {
+        const headers = results.meta && results.meta.fields ? results.meta.fields : [];
+        ingestRows(results.data, headers, file.name);
+      },
+      error: (err) => {
+        alert(file.name + ' 파일을 읽는 중 오류가 발생했습니다: ' + err.message);
+      }
+    });
+  });
+  fileInput.value = '';
+}
+
+
+function renderPendingDaily(){
+  const area = document.getElementById('pendingDailyArea');
+  if(pendingDaily.length === 0){ area.innerHTML = ''; return; }
+  area.innerHTML = pendingDaily.map((p, i) => {
+    const start = p.days.length ? p.days[0].date : '';
+    const end = p.days.length ? p.days[p.days.length - 1].date : '';
+    const totalRevenue = p.days.reduce((a,d) => a + d.revenue, 0);
+    const totalCancelled = p.days.reduce((a,d) => a + d.cancelledRevenue, 0);
+    // show how many calendar weeks this file's days will land in once saved
+    const weekCount = new Set(p.days.map(d => getMondayKey(d.date))).size;
+    return `
+      <div class="pending-row ${p.skippedCount ? 'duplicate' : ''}">
+        <span class="bib" style="background:var(--teal); color:#fff;">${weekCount}개 주</span>
+        <span style="flex:1; font-size:13px;">${p.fileName} · ${p.days.length}일치 (${start} ~ ${end})</span>
+        <span class="stat">${fmtWon(totalRevenue)}${totalCancelled ? ` · 취소 ${fmtWon(totalCancelled)}` : ''}</span>
+        ${p.skippedCount ? `<span class="dup-note">⚠ 발주일 없는 행 ${p.skippedCount}개 제외됨</span>` : ''}
+        <button class="btn-danger" data-remove-daily="${i}">삭제</button>
+      </div>
+    `;
+  }).join('') + `
+    <div class="save-row">
+      <button class="btn btn-ghost" id="clearPendingDaily">전체 취소</button>
+      <button class="btn btn-primary" id="saveAllDaily">저장하기</button>
+    </div>
+  `;
+  area.querySelectorAll('[data-remove-daily]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      pendingDaily.splice(+e.target.dataset.removeDaily, 1);
+      renderPendingDaily();
+    });
+  });
+  document.getElementById('clearPendingDaily').addEventListener('click', () => {
+    pendingDaily = [];
+    renderPendingDaily();
+  });
+  document.getElementById('saveAllDaily').addEventListener('click', saveEverything);
+}
+
+async function saveAllPendingDaily(){
+  const errors = [];
+  let savedCount = 0;
+  for(const file of pendingDaily){
+    for(const day of file.days){
+      const key = 'day_' + day.date.replace(/-/g, '');
+      try{
+        await setWithRetry(key, JSON.stringify(day));
+        savedCount++;
+      }catch(err){
+        console.error('일자별 저장 실패', key, err);
+        errors.push(day.date + ': ' + (err && err.message ? err.message : err));
+      }
+      await sleep(300);
+    }
+  }
+  if(errors.length){
+    alert('일부 날짜 저장에 실패했습니다.\n\n' + errors.join('\n') + '\n\n다시 시도해주세요.');
+  }
+  pendingDaily = [];
+  renderPendingDaily();
+  return savedCount;
+}
+
+// One upload can produce both a file-level summary and per-day records, so the
+// save buttons always commit everything that's queued.
+async function saveEverything(){
+  if(pendingDaily.length) await saveAllPendingDaily();
+  await loadAndRender();
+}
+
+function safeKeyPart(s){
+  // storage keys can't contain whitespace, / \ or quotes — strip anything risky
+  // and keep it short & deterministic
+  return (s || '')
+    .replace(/[^0-9A-Za-z]/g, '')
+    .slice(0, 40);
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+async function setWithRetry(key, value, tries = 5){
+  let lastErr = null;
+  for(let i = 0; i < tries; i++){
+    try{
+      const res = await storageAdapter.set(key, value);
+      if(res) return res;
+      lastErr = new Error('빈 응답');
+    }catch(err){
+      lastErr = err;
+    }
+    await sleep(600 * Math.pow(1.6, i)); // longer exponential back-off
+  }
+  throw lastErr;
+}
+
+
+// ---------- Load & render dashboard ----------
+
+
+async function loadAllDailyRecords(){
+  let list;
+  try{
+    list = await storageAdapter.list('day_');
+  }catch(err){
+    return [];
+  }
+  if(!list || !list.keys) return [];
+  const items = [];
+  for(const key of list.keys){
+    try{
+      const res = await storageAdapter.get(key);
+      if(res && res.value){
+        items.push(JSON.parse(res.value));
+      }
+    }catch(err){ /* skip missing */ }
+  }
+  items.sort((a,b) => a.date.localeCompare(b.date));
+  return items;
+}
+
+async function deleteDailyRecord(date){
+  const key = 'day_' + date.replace(/-/g, '');
+  try{
+    await storageAdapter.delete(key);
+  }catch(err){ console.error(err); }
+  await loadAndRender();
+}
+
+let kpiWeeks = [];
+
+// The first three KPI cards double as a readout for whichever week the cursor is
+// over on the trend chart; index === null restores the default (latest week).
+function paintKPIs(index){
+  const weeks = kpiWeeks;
+  if(!weeks.length) return;
+  const isHover = index !== null && index >= 0 && index < weeks.length;
+  const at = isHover ? index : weeks.length - 1;
+  const cur = weeks[at];
+  const prev = at > 0 ? weeks[at-1] : null;
+
+  const deltaHtml = (d) => {
+    if(d === null) return '<div class="delta flat">이전 주 없음</div>';
+    const cls = d > 0.05 ? 'up' : d < -0.05 ? 'down' : 'flat';
+    const arrow = d > 0.05 ? '▲' : d < -0.05 ? '▼' : '—';
+    return `<div class="delta ${cls}">${arrow} ${Math.abs(d).toFixed(1)}% 전주 대비</div>`;
+  };
+  const set = (n, label, value, deltaNode) => {
+    document.getElementById('kpiLabel'+n).textContent = label;
+    document.getElementById('kpiValue'+n).textContent = value;
+    document.getElementById('kpiDelta'+n).outerHTML = deltaNode.replace('class="delta', `id="kpiDelta${n}" class="delta`);
+  };
+
+  set(1, isHover ? `${cur.label} 매출` : '최근 주 매출',
+      fmtWon(cur.revenue), deltaHtml(prev ? fmtPct(cur.revenue, prev.revenue) : null));
+  set(2, '주문 건수', cur.orderCount.toLocaleString() + '건',
+      deltaHtml(prev ? fmtPct(cur.orderCount, prev.orderCount) : null));
+  set(3, '평균 객단가', fmtWon(cur.avgOrder),
+      deltaHtml(prev ? fmtPct(cur.avgOrder, prev.avgOrder) : null));
+
+  document.getElementById('kpiRow').classList.toggle('kpi-hovered', isHover);
+}
+
+function renderKPIs(weeks){
+  const row = document.getElementById('kpiRow');
+  if(!weeks.length){ row.innerHTML=''; kpiWeeks = []; return; }
+  kpiWeeks = weeks;
+  const last = weeks[weeks.length-1];
+  row.innerHTML = `
+    <div class="kpi"><div class="label" id="kpiLabel1">최근 주 매출</div>
+      <div class="value" id="kpiValue1"></div><div class="delta flat" id="kpiDelta1"></div></div>
+    <div class="kpi"><div class="label" id="kpiLabel2">주문 건수</div>
+      <div class="value" id="kpiValue2"></div><div class="delta flat" id="kpiDelta2"></div></div>
+    <div class="kpi"><div class="label" id="kpiLabel3">평균 객단가</div>
+      <div class="value" id="kpiValue3"></div><div class="delta flat" id="kpiDelta3"></div></div>
+    <div class="kpi"><div class="label">집계된 주</div><div class="value">${weeks.length}주</div>
+      <div class="delta flat">${last.label}</div></div>
+  `;
+  paintKPIs(null);
+}
+
+function renderChart(weeks){
+  const ctx = document.getElementById('trendChart');
+  if(typeof Chart === 'undefined'){
+    ctx.replaceWith(Object.assign(document.createElement('div'), {
+      className: 'empty',
+      style: 'padding:16px;',
+      innerHTML: '⚠ 차트 라이브러리(Chart.js)를 CDN에서 불러오지 못했습니다. 인터넷 연결 또는 방화벽 설정을 확인해주세요. 아래 표와 순위는 정상적으로 표시됩니다.'
+    }));
+    return;
+  }
+  const labels = weeks.map(w => w.label);
+  const revenues = weeks.map(w => w.revenue);
+  const orders = weeks.map(w => w.orderCount);
+
+  // Two filled areas overlap, so each stays translucent until hovered. Hovering
+  // a series lifts it above the other (higher `order` draws later = on top) and
+  // makes its fill opaque enough to read against the one behind it.
+  const REV = { line: '#000000', fillIdle: 'rgba(0,0,0,0.10)',      fillHot: 'rgba(0,0,0,0.22)' };
+  const ORD = { line: '#29C2AE', fillIdle: 'rgba(41,194,174,0.16)', fillHot: 'rgba(41,194,174,0.38)' };
+
+  const baseDataset = (label, data, c, axis) => ({
+    type: 'line',
+    label, data,
+    yAxisID: axis,
+    borderColor: c.line,
+    backgroundColor: c.fillIdle,
+    borderWidth: 2,
+    fill: 'origin',          // shade down to the bottom of the plot
+    tension: 0.35,
+    pointRadius: 3,
+    pointHoverRadius: 6,
+    pointBackgroundColor: c.line,
+    pointBorderColor: '#ffffff',
+    pointBorderWidth: 1.5
+  });
+
+  if(chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    data: {
+      datasets: [
+        Object.assign(baseDataset('매출액', revenues, REV, 'y'),  { order: 2 }),
+        Object.assign(baseDataset('주문 건수', orders, ORD, 'y1'), { order: 1 })
+      ],
+      labels
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, usePointStyle: true } },
+        tooltip: { enabled: false }   // replaced by the cursor-following tip
+      },
+      scales: {
+        y:  { position: 'left',  beginAtZero: true, ticks: { callback: v => (v/10000)+'만' }, grid:{ color:'#efefef' } },
+        y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { precision:0 } }
+      }
+    }
+  });
+
+  const zOrder = makeZOrderHandler(chartInstance, [REV, ORD], [2, 1]);
+  attachCursorTooltip(
+    chartInstance,
+    [
+      { label: '매출액',    color: REV.line, format: v => fmtWon(v) },
+      { label: '주문 건수', color: ORD.line, format: v => v.toLocaleString() + '건' }
+    ],
+    (dsIdx, ptIdx) => { zOrder(dsIdx); paintKPIs(ptIdx); }
+  );
+}
+
+function renderTable(weeks){
+  const tbody = document.querySelector('#summaryTable tbody');
+  tbody.innerHTML = weeks.slice().reverse().map((w) => {
+    const i = weeks.indexOf(w);
+    const prev = i > 0 ? weeks[i-1] : null;
+    const d = prev ? fmtPct(w.revenue, prev.revenue) : null;
+    const dHtml = d === null ? '<span style="color:var(--muted)">-</span>'
+      : `<span class="${d>0.05?'up':d<-0.05?'down':'flat'}">${d>0?'▲':d<0?'▼':'—'} ${Math.abs(d).toFixed(1)}%</span>`;
+    return `
+      <tr>
+        <td><span class="bib-cell">${i+1}주차</span> ${w.label}</td>
+        <td>${w.firstDate} ~ ${w.lastDate} <span style="color:var(--muted)">(${w.dayCount}일)</span></td>
+        <td class="num">${fmtWon(w.revenue)}</td>
+        <td class="num">${dHtml}</td>
+        <td class="num">${w.orderCount.toLocaleString()}건</td>
+        <td class="num">${fmtWon(w.avgOrder)}</td>
+      </tr>`;
+  }).join('');
+}
+
+function renderRanks(weeks){
+  const grid = document.getElementById('rankGrid');
+  const recent = weeks.slice(-3).reverse();
+  grid.innerHTML = recent.map((w) => {
+    const idx = weeks.indexOf(w);
+    const byRevenue = w.products.slice().sort((a,b) => b.revenue - a.revenue);
+    const total = byRevenue.reduce((a,p) => a + p.revenue, 0) || 1;
+    const top = byRevenue.slice(0, 6);
+    const maxPct = (top[0] ? top[0].revenue : 0) / total * 100 || 1;
+    return `
+      <div class="rank-period">
+        <h3><span class="bib-cell">${idx+1}주차</span> ${w.label}
+          <span style="margin-left:auto; font-weight:600; color:var(--muted); font-size:11.5px;">총 ${fmtWon(total)}</span>
+        </h3>
+        <ul class="rank-list rank-list-bars">
+          ${top.map(pr => {
+            const pct = pr.revenue / total * 100;
+            const width = Math.max(2, (pct / maxPct) * 100);
+            return `
+              <li class="rank-bar-row">
+                <button class="pname-btn" data-daily-pname="${encodeURIComponent(pr.name)}">${pr.name}</button>
+                <div class="rank-bar-wrap">
+                  <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${width}%"></div></div>
+                  <div class="rank-bar-labels">
+                    <span class="rank-pct">${pct.toFixed(1)}%</span>
+                    <span class="rank-amt">${fmtWon(pr.revenue)}</span>
+                  </div>
+                </div>
+              </li>`;
+          }).join('')}
+        </ul>
+      </div>`;
+  }).join('');
+  grid.querySelectorAll('[data-daily-pname]').forEach(btn => {
+    btn.addEventListener('click', () => showDailyProductTrend(decodeURIComponent(btn.dataset.dailyPname)));
+  });
+}
+
+function renderPaymentMethods(weeks){
+  const tbody = document.querySelector('#paymentTable tbody');
+  let rows = '';
+  weeks.slice(-4).forEach((w) => {
+    const idx = weeks.indexOf(w);
+    const totalCount = w.paymentMethods.reduce((a,m)=>a+m.count,0) || 1;
+    w.paymentMethods.forEach((m, i) => {
+      rows += `
+        <tr>
+          <td>${i === 0 ? `<span class="bib-cell">${idx+1}주차</span> ${w.label}` : ''}</td>
+          <td>${m.method}</td>
+          <td class="num">${m.count.toLocaleString()}건</td>
+          <td class="num">${((m.count/totalCount)*100).toFixed(1)}%</td>
+          <td class="num">${fmtWon(m.revenue || 0)}</td>
+        </tr>`;
+    });
+  });
+  tbody.innerHTML = rows || '<tr><td colspan="5" style="color:var(--muted)">결제수단 데이터가 없습니다.</td></tr>';
+}
+
+function renderRefunds(weeks){
+  const desc = document.getElementById('refundDesc');
+  const content = document.getElementById('refundContent');
+  desc.textContent = '"취소구분" 기준으로 주간 단위 집계했습니다. 순매출은 취소 건을 제외한 금액입니다.';
+
+  const last = weeks[weeks.length-1];
+  const prev = weeks.length > 1 ? weeks[weeks.length-2] : null;
+  const rateDelta = prev ? (last.refundRate - prev.refundRate) : null;
+
+  content.innerHTML = `
+    <div class="kpis" style="margin-bottom:16px;">
+      <div class="kpi"><div class="label">최근 주 취소 건수</div><div class="value">${last.cancelledOrderCount.toLocaleString()}건</div>
+        <div class="delta flat">전체 주문의 ${last.refundRate.toFixed(1)}%</div></div>
+      <div class="kpi"><div class="label">최근 주 환불 금액</div><div class="value">${fmtWon(last.cancelledRevenue)}</div>
+        <div class="delta flat">순매출 ${fmtWon(last.revenue)}</div></div>
+      <div class="kpi"><div class="label">환불율 변화</div><div class="value">${last.refundRate.toFixed(1)}%</div>
+        ${rateDelta === null ? '<div class="delta flat">이전 주 없음</div>' :
+          `<div class="delta ${rateDelta>0?'down':rateDelta<0?'up':'flat'}">${rateDelta>0?'▲':rateDelta<0?'▼':'—'} ${Math.abs(rateDelta).toFixed(1)}%p 전주 대비</div>`}
+      </div>
+      <div class="kpi"><div class="label">누적 환불 금액</div><div class="value">${fmtWon(weeks.reduce((a,w)=>a+w.cancelledRevenue,0))}</div>
+        <div class="delta flat">${weeks.length}주 합계</div></div>
+    </div>
+    <canvas id="refundChart" height="80"></canvas>
+    <div style="overflow-x:auto; margin-top:16px;">
+      <table><thead><tr><th>주차</th><th>기간</th><th class="num">취소 건수</th><th class="num">환불 금액</th><th class="num">환불율</th><th class="num">순매출</th></tr></thead>
+        <tbody>
+          ${weeks.slice().reverse().map(w => `
+            <tr>
+              <td><span class="bib-cell">${weeks.indexOf(w)+1}주차</span> ${w.label}</td>
+              <td>${w.firstDate} ~ ${w.lastDate}</td>
+              <td class="num">${w.cancelledOrderCount.toLocaleString()}건</td>
+              <td class="num">${fmtWon(w.cancelledRevenue)}</td>
+              <td class="num">${w.refundRate.toFixed(1)}%</td>
+              <td class="num">${fmtWon(w.revenue)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  const ctx = document.getElementById('refundChart');
+  if(typeof Chart === 'undefined'){
+    ctx.replaceWith(Object.assign(document.createElement('div'), {
+      className: 'empty', style: 'padding:16px;',
+      innerHTML: '⚠ 차트 라이브러리를 불러오지 못했습니다. 위 표는 정상적으로 표시됩니다.'
+    }));
+    return;
+  }
+  const RFD = { line: '#d0453b', fillIdle: 'rgba(208,69,59,0.14)', fillHot: 'rgba(208,69,59,0.34)' };
+  const RTE = { line: '#000000', fillIdle: 'rgba(0,0,0,0.08)',     fillHot: 'rgba(0,0,0,0.20)' };
+  const area = (label, data, c, axis) => ({
+    type: 'line', label, data, yAxisID: axis,
+    borderColor: c.line, backgroundColor: c.fillIdle, borderWidth: 2,
+    fill: 'origin', tension: 0.35,
+    pointRadius: 3, pointHoverRadius: 6,
+    pointBackgroundColor: c.line, pointBorderColor: '#ffffff', pointBorderWidth: 1.5
+  });
+
+  if(refundChartInstance) refundChartInstance.destroy();
+  refundChartInstance = new Chart(ctx, {
+    data: {
+      labels: weeks.map(w => w.label),
+      datasets: [
+        Object.assign(area('환불 금액', weeks.map(w=>w.cancelledRevenue), RFD, 'y'),  { order: 2 }),
+        Object.assign(area('환불율(%)', weeks.map(w=>w.refundRate),       RTE, 'y1'), { order: 1 })
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position:'bottom', labels:{ boxWidth:12, font:{size:11}, usePointStyle:true } },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        y:  { position:'left',  beginAtZero:true, ticks:{ callback: v => (v/10000)+'만' }, grid:{color:'#efefef'} },
+        y1: { position:'right', beginAtZero:true, grid:{ drawOnChartArea:false }, ticks:{ callback: v => v+'%' } }
+      }
+    }
+  });
+
+  attachCursorTooltip(
+    refundChartInstance,
+    [
+      { label: '환불 금액', color: RFD.line, format: v => fmtWon(v) },
+      { label: '환불율',    color: RTE.line, format: v => v.toFixed(1) + '%' }
+    ],
+    makeZOrderHandler(refundChartInstance, [RFD, RTE], [2, 1])
+  );
+}
+
+function safeRender(name, fn){
+  try{
+    fn();
+  }catch(err){
+    console.error('렌더링 실패: ' + name, err);
+  }
+}
+
+// ---------- Daily section rendering ----------
+function renderDailyKPIs(days){
+  const row = document.getElementById('dailyKpiRow');
+  if(days.length === 0){ row.innerHTML=''; return; }
+  const last = days[days.length-1];
+  const prev = days.length > 1 ? days[days.length-2] : null;
+  const totalRevenue = days.reduce((a,d)=>a+d.revenue, 0);
+  const totalCancelled = days.reduce((a,d)=>a+d.cancelledRevenue, 0);
+
+  const revDelta = prev ? fmtPct(last.revenue, prev.revenue) : null;
+  const deltaHtml = (d) => {
+    if(d === null) return '<div class="delta flat">전날 데이터 없음</div>';
+    const cls = d > 0.05 ? 'up' : d < -0.05 ? 'down' : 'flat';
+    const arrow = d > 0.05 ? '▲' : d < -0.05 ? '▼' : '—';
+    return `<div class="delta ${cls}">${arrow} ${Math.abs(d).toFixed(1)}% 전날 대비</div>`;
+  };
+
+  row.innerHTML = `
+    <div class="kpi"><div class="label">최근 날짜 매출</div><div class="value">${fmtWon(last.revenue)}</div>${deltaHtml(revDelta)}</div>
+    <div class="kpi"><div class="label">최근 날짜 판매 수량</div><div class="value">${last.qty.toLocaleString()}개</div><div class="delta flat">${last.date}</div></div>
+    <div class="kpi"><div class="label">누적 기간 매출</div><div class="value">${fmtWon(totalRevenue)}</div><div class="delta flat">${days[0].date} ~ ${last.date}</div></div>
+    <div class="kpi"><div class="label">누적 취소 금액</div><div class="value">${fmtWon(totalCancelled)}</div><div class="delta flat">${days.length}일 저장됨</div></div>
+  `;
+}
+
+function renderDailyChart(days){
+  const ctx = document.getElementById('dailyTrendChart');
+  if(typeof Chart === 'undefined'){
+    ctx.replaceWith(Object.assign(document.createElement('div'), {
+      className: 'empty', style: 'padding:16px;',
+      innerHTML: '⚠ 차트 라이브러리를 불러오지 못했습니다. 아래 표는 정상적으로 표시됩니다.'
+    }));
+    return;
+  }
+  if(dailyChartInstance) dailyChartInstance.destroy();
+  dailyChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: days.map(d => d.date.slice(5)),
+      datasets: [{
+        label: '순매출',
+        data: days.map(d => d.revenue),
+        backgroundColor: '#000000',
+        borderRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: item => ' 매출: ' + fmtWon(item.raw) } }
+      },
+      scales: {
+        y: { ticks: { callback: v => (v/10000)+'만' }, grid:{color:'#efefef'} }
+      }
+    }
+  });
+}
+
+function renderDailyTable(days){
+  const tbody = document.querySelector('#dailySummaryTable tbody');
+  tbody.innerHTML = days.slice().reverse().map(d => `
+    <tr>
+      <td>${d.date}</td>
+      <td class="num">${fmtWon(d.revenue)}</td>
+      <td class="num">${d.qty.toLocaleString()}개</td>
+      <td class="num">${d.cancelledRevenue ? fmtWon(d.cancelledRevenue) : '<span style="color:var(--muted)">-</span>'}</td>
+      <td class="num">${d.cancelledQty ? d.cancelledQty.toLocaleString()+'건' : '<span style="color:var(--muted)">-</span>'}</td>
+      <td class="num"><button class="btn-danger" data-del-day="${d.date}">삭제</button></td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('[data-del-day]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const date = e.target.dataset.delDay;
+      if(confirm(`${date} 데이터를 삭제할까요?`)){
+        await deleteDailyRecord(date);
+      }
+    });
+  });
+}
+
+let rankRange = { mode: 'all', start: null, end: null };
+
+// Narrow the saved days down to whatever range the user picked. Ranges are
+// anchored to the newest day in the data, not today, so demo/back-dated files
+// still show sensible "recent" windows.
+function daysInRankRange(days){
+  if(!days.length) return [];
+  const sorted = days.slice().sort((a,b) => a.date.localeCompare(b.date));
+  const lastDate = sorted[sorted.length-1].date;
+
+  if(rankRange.mode === 'all') return sorted;
+
+  if(rankRange.mode === 'custom'){
+    if(!rankRange.start || !rankRange.end) return sorted;
+    const [lo, hi] = rankRange.start <= rankRange.end
+      ? [rankRange.start, rankRange.end]
+      : [rankRange.end, rankRange.start];
+    return sorted.filter(d => d.date >= lo && d.date <= hi);
+  }
+
+  const weeksBack = rankRange.mode === 'last1' ? 1 : 4;
+  const cutoff = new Date(lastDate + 'T00:00:00');
+  cutoff.setDate(cutoff.getDate() - (weeksBack * 7 - 1));
+  const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth()+1).padStart(2,'0')}-${String(cutoff.getDate()).padStart(2,'0')}`;
+  return sorted.filter(d => d.date >= cutoffStr);
+}
+
+function renderDailyProductRank(allDays){
+  const list = document.getElementById('dailyProductRankList');
+  const labelEl = document.getElementById('rankRangeLabel');
+  const days = daysInRankRange(allDays);
+
+  if(!days.length){
+    labelEl.textContent = '선택한 기간에 데이터가 없습니다.';
+    list.className = 'rank-list';
+    list.innerHTML = '<li style="color:var(--muted); padding:14px 0;">해당 기간에 판매 기록이 없습니다.</li>';
+    return;
+  }
+
+  const totals = new Map(); // name -> {qty, revenue}
+  days.forEach(d => {
+    d.products.forEach(p => {
+      if(!totals.has(p.name)) totals.set(p.name, { qty: 0, revenue: 0 });
+      const t = totals.get(p.name);
+      t.qty += p.qty;
+      t.revenue += p.revenue;
+    });
+  });
+  const ranked = Array.from(totals.entries())
+    .map(([name, v]) => ({ name, qty: v.qty, revenue: v.revenue }))
+    .sort((a,b) => b.revenue - a.revenue)
+    .slice(0, 12);
+
+  const grandTotal = ranked.reduce((a,p) => a + p.revenue, 0) || 1;
+  const maxPct = (ranked[0] ? ranked[0].revenue : 0) / grandTotal * 100 || 1;
+
+  labelEl.textContent =
+    `${days[0].date} ~ ${days[days.length-1].date} · ${days.length}일 · 합계 ${fmtWon(grandTotal)}`;
+
+  list.className = 'rank-list rank-list-bars';
+  list.innerHTML = ranked.map((p, i) => {
+    const pct = p.revenue / grandTotal * 100;
+    const width = Math.max(2, (pct / maxPct) * 100);
+    return `
+      <li class="rank-bar-row">
+        <button class="pname-btn" data-daily-pname="${encodeURIComponent(p.name)}"><span style="color:var(--muted); margin-right:8px;">${String(i+1).padStart(2,'0')}</span>${p.name}</button>
+        <div class="rank-bar-wrap">
+          <div class="rank-bar-track">
+            <div class="rank-bar-fill" style="width:${width}%"></div>
+          </div>
+          <div class="rank-bar-labels">
+            <span class="rank-pct">${pct.toFixed(1)}%</span>
+            <span class="rank-amt">${p.qty.toLocaleString()}개 · ${fmtWon(p.revenue)}</span>
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
+  list.querySelectorAll('[data-daily-pname]').forEach(btn => {
+    btn.addEventListener('click', () => showDailyProductTrend(decodeURIComponent(btn.dataset.dailyPname)));
+  });
+}
+
+document.querySelectorAll('#rankRangeToggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    rankRange.mode = btn.dataset.range;
+    document.querySelectorAll('#rankRangeToggle button')
+      .forEach(b => b.classList.toggle('active', b === btn));
+    const custom = document.getElementById('rankCustomRange');
+    custom.style.display = (rankRange.mode === 'custom') ? 'flex' : 'none';
+    if(rankRange.mode === 'custom' && currentDailyRecords.length){
+      // seed the pickers with the full span so the inputs aren't empty
+      const sorted = currentDailyRecords.slice().sort((a,b) => a.date.localeCompare(b.date));
+      const s = document.getElementById('rankStartDate');
+      const e = document.getElementById('rankEndDate');
+      if(!s.value) s.value = sorted[0].date;
+      if(!e.value) e.value = sorted[sorted.length-1].date;
+      rankRange.start = s.value; rankRange.end = e.value;
+    }
+    renderDailyProductRank(currentDailyRecords);
+  });
+});
+
+document.getElementById('rankRangeApply').addEventListener('click', () => {
+  rankRange.start = document.getElementById('rankStartDate').value;
+  rankRange.end = document.getElementById('rankEndDate').value;
+  if(!rankRange.start || !rankRange.end){
+    alert('시작일과 종료일을 모두 선택해주세요.');
+    return;
+  }
+  renderDailyProductRank(currentDailyRecords);
+});
+
+const dailyProductModal = document.getElementById('dailyProductModal');
+document.getElementById('dailyProductModalClose').addEventListener('click', () => dailyProductModal.classList.remove('open'));
+dailyProductModal.addEventListener('click', e => { if(e.target === dailyProductModal) dailyProductModal.classList.remove('open'); });
+
+let dailyProductModalState = { name: null, granularity: 'daily', selectedDate: null };
+
+function showDailyProductTrend(productName){
+  dailyProductModalState = { name: productName, granularity: 'daily', selectedDate: null };
+  document.querySelectorAll('#dailyProductModalGranularity button').forEach(b => {
+    b.classList.toggle('active', b.dataset.gran === 'daily');
+  });
+  renderDailyProductModalView();
+  dailyProductModal.classList.add('open');
+}
+
+document.querySelectorAll('#dailyProductModalGranularity button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    dailyProductModalState.granularity = btn.dataset.gran;
+    document.querySelectorAll('#dailyProductModalGranularity button').forEach(b => b.classList.toggle('active', b === btn));
+    renderDailyProductModalView();
+  });
+});
+
+document.getElementById('dailyProductModalDateSelect').addEventListener('change', e => {
+  dailyProductModalState.selectedDate = e.target.value;
+  renderDailyProductModalView();
+});
+
+function renderDailyProductModalView(){
+  if(!currentDailyRecords.length || !dailyProductModalState.name) return;
+  const productName = dailyProductModalState.name;
+  const gran = dailyProductModalState.granularity;
+
+  const dailySeries = currentDailyRecords.map(d => {
+    const match = d.products.find(p => p.name === productName);
+    return { date: d.date, qty: match ? match.qty : 0, revenue: match ? match.revenue : 0, hourly: match ? match.hourly : null };
+  });
+  const totalQty = dailySeries.reduce((a,s)=>a+s.qty, 0);
+  const totalRevenue = dailySeries.reduce((a,s)=>a+s.revenue, 0);
+  const soldDays = dailySeries.filter(s => s.qty > 0).length;
+
+  document.getElementById('dailyProductModalTitle').textContent = productName;
+
+  const thead = document.getElementById('dailyProductModalTableHead');
+  const tbody = document.querySelector('#dailyProductModalTable tbody');
+  const chartRef = { current: dailyProductModalChartInstance };
+  const canvasEl = document.getElementById('dailyProductModalChart');
+  const datePicker = document.getElementById('dailyProductModalDatePicker');
+  const dateSelect = document.getElementById('dailyProductModalDateSelect');
+  if(gran !== 'hourly') datePicker.style.display = 'none';
+
+  if(gran === 'daily'){
+    document.getElementById('dailyProductModalSub').textContent =
+      `전체 ${dailySeries.length}일 중 ${soldDays}일 판매됨 · 누적 ${totalQty.toLocaleString()}개 · 누적 매출 ${fmtWon(totalRevenue)}`;
+    thead.innerHTML = '<tr><th>날짜</th><th class="num">판매 수량</th><th class="num">매출</th></tr>';
+    tbody.innerHTML = dailySeries.slice().reverse().map(s => `
+      <tr>
+        <td>${s.date}</td>
+        <td class="num">${s.qty ? s.qty.toLocaleString()+'개' : '<span style="color:var(--muted)">-</span>'}</td>
+        <td class="num">${s.qty ? fmtWon(s.revenue) : '<span style="color:var(--muted)">-</span>'}</td>
+      </tr>
+    `).join('');
+    dailyProductModalChartInstance = renderTrendLineChart(canvasEl, chartRef, dailySeries.map(s=>s.date.slice(5)), dailySeries.map(s=>s.qty), '#29C2AE');
+
+  } else if(gran === 'weekly'){
+    const weekly = groupSeriesByWeek(dailySeries.map(s => ({ date: s.date, qty: s.qty, revenue: s.revenue })));
+    document.getElementById('dailyProductModalSub').textContent =
+      `${weekly.length}개 주(월요일 시작)로 묶음 · 누적 ${totalQty.toLocaleString()}개 · 누적 매출 ${fmtWon(totalRevenue)}`;
+    thead.innerHTML = '<tr><th>주(월요일 시작)</th><th class="num">판매 수량</th><th class="num">매출</th></tr>';
+    tbody.innerHTML = weekly.slice().reverse().map(w => `
+      <tr>
+        <td>${w.label}</td>
+        <td class="num">${w.qty ? w.qty.toLocaleString()+'개' : '<span style="color:var(--muted)">-</span>'}</td>
+        <td class="num">${w.qty ? fmtWon(w.revenue) : '<span style="color:var(--muted)">-</span>'}</td>
+      </tr>
+    `).join('');
+    dailyProductModalChartInstance = renderTrendLineChart(canvasEl, chartRef, weekly.map(w=>w.label.slice(5,10)), weekly.map(w=>w.qty), '#000000');
+
+  } else if(gran === 'hourly'){
+    const soldDates = dailySeries.filter(s => s.qty > 0).map(s => s.date);
+    const hasBreakdown = dailySeries.some(s => s.qty > 0 && s.hourly);
+    if(soldDates.length && !hasBreakdown){
+      datePicker.style.display = 'none';
+      document.getElementById('dailyProductModalSub').textContent =
+        `이 상품이 팔린 날짜 데이터는 시간별 정보가 저장되기 전 버전입니다. 원본 CSV를 다시 업로드해서 저장을 한 번 더 누르면 채워집니다.`;
+      thead.innerHTML = '<tr><th>시간대</th><th class="num">판매 수량</th><th class="num">매출</th></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">⚠ 시간별 데이터가 저장되어 있지 않습니다. 원본 CSV를 다시 업로드해 저장해주세요.</td></tr>';
+      if(chartRef.current){ chartRef.current.destroy(); dailyProductModalChartInstance = null; }
+      return;
+    }
+
+    // populate the date dropdown with 전체 합산 + every date this product actually sold on
+    datePicker.style.display = 'block';
+    const selected = dailyProductModalState.selectedDate || '__ALL__';
+    dateSelect.innerHTML = `<option value="__ALL__">전체 기간 합산</option>` +
+      soldDates.map(d => `<option value="${d}">${d}</option>`).join('');
+    dateSelect.value = selected;
+
+    const scope = selected === '__ALL__'
+      ? dailySeries
+      : dailySeries.filter(s => s.date === selected);
+    const totals = sumHourly(scope.map(s => s.hourly));
+    const scopeQty = scope.reduce((a,s)=>a+s.qty, 0);
+    const scopeRevenue = scope.reduce((a,s)=>a+s.revenue, 0);
+
+    document.getElementById('dailyProductModalSub').textContent = selected === '__ALL__'
+      ? `저장된 전체 기간(${soldDates.length}일)을 시간대별로 합산 · ${scopeQty.toLocaleString()}개 · ${fmtWon(scopeRevenue)}`
+      : `${selected} 하루 동안의 시간대별 판매 · ${scopeQty.toLocaleString()}개 · ${fmtWon(scopeRevenue)}`;
+    thead.innerHTML = '<tr><th>시간대</th><th class="num">판매 수량</th><th class="num">매출</th></tr>';
+    tbody.innerHTML = totals.map(t => `
+      <tr>
+        <td>${t.label}</td>
+        <td class="num">${t.qty ? t.qty.toLocaleString()+'개' : '<span style="color:var(--muted)">-</span>'}</td>
+        <td class="num">${t.qty ? fmtWon(t.revenue) : '<span style="color:var(--muted)">-</span>'}</td>
+      </tr>
+    `).join('');
+    dailyProductModalChartInstance = renderTrendLineChart(canvasEl, chartRef, totals.map(t=>t.label), totals.map(t=>t.qty), '#29C2AE');
+  }
+}
+
+async function loadAndRender(){
+  hideChartTip();   // stale tip could otherwise linger over re-rendered charts
+  const days = await loadAllDailyRecords();
+  currentDailyRecords = days;
+  const weeks = buildWeeks(days);
+  currentWeeks = weeks;
+
+  const has = weeks.length > 0;
+  ['reportPanel','promoPanel','trendPanel','tablePanel','rankPanel','paymentPanel','refundPanel'].forEach(id => {
+    document.getElementById(id).style.display = has ? 'block' : 'none';
+  });
+  if(has){
+    safeRender('리포트', () => renderReport(weeks, days));
+    safeRender('프로모션', () => renderPromos(days));
+    safeRender('KPI', () => renderKPIs(weeks));
+    safeRender('차트', () => renderChart(weeks));
+    safeRender('표', () => renderTable(weeks));
+    safeRender('상품순위', () => renderRanks(weeks));
+    safeRender('결제수단', () => renderPaymentMethods(weeks));
+    safeRender('환불', () => renderRefunds(weeks));
+  }
+
+  const hasDaily = days.length > 0;
+  ['dailyTrendPanel','dailyTablePanel','dailyProductPanel'].forEach(id => {
+    document.getElementById(id).style.display = hasDaily ? 'block' : 'none';
+  });
+  if(hasDaily){
+    safeRender('일자별 KPI', () => renderDailyKPIs(days));
+    safeRender('일자별 차트', () => renderDailyChart(days));
+    safeRender('일자별 표', () => renderDailyTable(days));
+    safeRender('일자별 상품순위', () => renderDailyProductRank(days));
+  }
+
+  document.getElementById('emptyPanel').style.display = (has || hasDaily) ? 'none' : 'block';
+}
+
+function renderStorageBanner(){
+  const el = document.getElementById('storageBanner');
+  if(usingClaudeStorage){
+    el.style.background = 'transparent';
+    el.style.borderLeft = '2px solid #29C2AE';
+    el.style.color = '#cfcfcf';
+    el.textContent = 'Claude 저장소 사용 중 — 이 대화의 아티팩트로 열 때마다 데이터가 유지됩니다.';
+  } else {
+    el.style.background = 'transparent';
+    el.style.borderLeft = '2px solid #8a8a8a';
+    el.style.color = '#9a9a9a';
+    el.textContent = '로컬 브라우저 저장 모드 — 이 브라우저에서만 데이터가 유지됩니다. "데이터 내보내기"로 주기적으로 백업하세요.';
+  }
+}
+
+async function exportData(){
+  const days = await loadAllDailyRecords();
+  const promos = await loadAllPromos();
+  if(days.length === 0 && promos.length === 0){ alert('내보낼 데이터가 없습니다.'); return; }
+  const blob = new Blob([JSON.stringify({ days, promos }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sales_backup_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+async function importData(file){
+  try{
+    const parsed = JSON.parse(await file.text());
+    // accept {days}, older {periods, days}, or a bare array of day records
+    const days = Array.isArray(parsed) ? parsed : (parsed.days || []);
+    const promos = Array.isArray(parsed) ? [] : (parsed.promos || []);
+    if(!days.length && !promos.length) throw new Error('가져올 데이터가 없습니다.');
+    let count = 0;
+    for(const d of days){
+      if(!d || !d.date) continue;
+      await setWithRetry('day_' + d.date.replace(/-/g, ''), JSON.stringify(d));
+      count++;
+      await sleep(150);
+    }
+    for(const pr of promos){
+      if(!pr || !pr.keyword) continue;
+      await setWithRetry(promoKey(pr), JSON.stringify(pr));
+      count++;
+      await sleep(150);
+    }
+    alert(`${count}일치 데이터를 가져왔습니다.`);
+    await loadAndRender();
+  }catch(err){
+    alert('가져오기에 실패했습니다: ' + err.message);
+  }
+}
+
+async function resetAllData(){
+  const days = await loadAllDailyRecords();
+  const promos = await loadAllPromos();
+  if(days.length === 0 && promos.length === 0 && pendingDaily.length === 0){
+    alert('삭제할 데이터가 없습니다.');
+    return;
+  }
+  if(!confirm(
+    `저장된 데이터를 모두 삭제합니다.\n\n· 일자별 데이터 ${days.length}일치\n· 프로모션 ${promos.length}개\n\n` +
+    `이 작업은 되돌릴 수 없습니다. 계속할까요?\n(먼저 "데이터 내보내기"로 백업해두시길 권장합니다.)`
+  )) return;
+
+  let failed = 0;
+  for(const d of days){
+    try{ await storageAdapter.delete('day_' + d.date.replace(/-/g, '')); }
+    catch(err){ failed++; console.error(err); }
+  }
+  for(const pr of promos){
+    try{ await storageAdapter.delete(promoKey(pr)); }
+    catch(err){ failed++; console.error(err); }
+  }
+
+  pendingDaily = [];
+  renderPendingDaily();
+
+  // drop any chart instances so they don't linger against removed data
+  [chartInstance, dailyChartInstance, dailyProductModalChartInstance]
+    .forEach(c => { if(c){ try{ c.destroy(); }catch(e){} } });
+  chartInstance = dailyChartInstance = dailyProductModalChartInstance = null;
+
+  await loadAndRender();
+  alert(failed ? `${failed}개 항목 삭제에 실패했습니다. 다시 시도해주세요.` : '모든 데이터를 삭제했습니다.');
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportData);
+document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change', e => {
+  if(e.target.files[0]) importData(e.target.files[0]);
+  e.target.value = '';
+});
+document.getElementById('resetBtn').addEventListener('click', resetAllData);
+
+// ---------- Product drill-down modal ----------
+function getMondayKey(dateStr){
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  const dow = dt.getDay(); // 0=Sun..6=Sat
+  const diff = (dow === 0 ? -6 : 1 - dow);
+  dt.setDate(dt.getDate() + diff);
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${dt.getFullYear()}-${mm}-${dd}`;
+}
+function groupSeriesByWeek(series){
+  const map = new Map();
+  series.forEach(s => {
+    const wk = getMondayKey(s.date);
+    if(!map.has(wk)) map.set(wk, { label: wk + ' 주', qty: 0, revenue: 0 });
+    const w = map.get(wk);
+    w.qty += s.qty;
+    w.revenue += s.revenue;
+  });
+  return Array.from(map.values()).sort((a,b) => a.label.localeCompare(b.label));
+}
+function sumHourly(hourlyArrays){
+  const totals = Array.from({length:24}, () => ({ qty: 0, revenue: 0 }));
+  hourlyArrays.forEach(h => {
+    if(!h) return;
+    h.forEach((v, i) => { totals[i].qty += v.qty; totals[i].revenue += v.revenue; });
+  });
+  return totals.map((v, i) => ({ label: `${i}시`, qty: v.qty, revenue: v.revenue }));
+}
+function renderTrendLineChart(canvasEl, existingInstanceRef, labels, data, color){
+  if(typeof Chart === 'undefined'){
+    canvasEl.replaceWith(Object.assign(document.createElement('div'), {
+      className: 'empty', style: 'padding:12px;',
+      innerHTML: '⚠ 차트 라이브러리를 불러오지 못했습니다. 아래 표는 정상적으로 표시됩니다.'
+    }));
+    return null;
+  }
+  if(existingInstanceRef.current) existingInstanceRef.current.destroy();
+  existingInstanceRef.current = new Chart(canvasEl, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '판매 수량',
+        data,
+        borderColor: color,
+        backgroundColor: color,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+  return existingInstanceRef.current;
+}
+
+
+
+// ---------- Promotion ROI ----------
+let promoChartInstances = [];
+
+async function loadAllPromos(){
+  let list;
+  try{ list = await storageAdapter.list('promo_'); }catch(err){ return []; }
+  if(!list || !list.keys) return [];
+  const items = [];
+  for(const key of list.keys){
+    try{
+      const res = await storageAdapter.get(key);
+      if(res && res.value) items.push(JSON.parse(res.value));
+    }catch(err){ /* skip */ }
+  }
+  return items.sort((a,b) => (a.start||'').localeCompare(b.start||''));
+}
+
+// Keyed on the keyword alone: the period is auto-detected and can shift when new
+// data arrives, so including it would orphan the old record and duplicate the promo.
+function promoKey(p){ return 'promo_' + safeKeyPart(p.keyword); }
+
+// The promo window is whatever the data says: first through last day on which a
+// matching product actually sold. Cancelled-only days don't count as activity.
+function detectPromoPeriod(keyword, days){
+  if(!keyword) return null;
+  const hits = [];
+  days.forEach(d => {
+    const sold = (d.products || []).some(p => p.name.includes(keyword) && p.qty > 0);
+    if(sold) hits.push(d.date);
+  });
+  if(!hits.length) return null;
+  hits.sort();
+  return { start: hits[0], end: hits[hits.length-1], activeDays: hits.length };
+}
+
+/**
+ * Everything ROI-related in one pass over the saved days:
+ *  - promo orders  = orders in [start,end] containing an item whose name includes the keyword
+ *  - promo revenue = only the matched items' revenue (mixed carts don't over-attribute)
+ *  - repeat        = promo buyers' NON-promo item revenue dated after their first promo purchase
+ */
+function computePromoStats(promo, days){
+  const kw = promo.keyword;
+  const inPeriod = d => d.date >= promo.start && d.date <= promo.end;
+
+  const buyerFirst = new Map();          // buyer hash -> first promo purchase date
+  let promoRevenue = 0, promoOrders = 0, promoQty = 0, cancelledOrders = 0;
+  let missingOrderList = 0, missingBuyer = 0;
+  const dailyPromo = new Map();
+
+  days.forEach(d => {
+    if(!inPeriod(d)) return;
+    if(!d.orderList){ missingOrderList++; return; }
+    d.orderList.forEach(o => {
+      const hit = (o.items||[]).filter(it => it.n.includes(kw));
+      if(!hit.length) return;
+      if(o.c){ cancelledOrders++; return; }
+      const rev = hit.reduce((a,it)=>a+it.r,0);
+      promoRevenue += rev;
+      promoQty += hit.reduce((a,it)=>a+it.q,0);
+      promoOrders++;
+      dailyPromo.set(d.date, (dailyPromo.get(d.date)||0) + rev);
+      if(o.b){
+        if(!buyerFirst.has(o.b) || d.date < buyerFirst.get(o.b)) buyerFirst.set(o.b, d.date);
+      } else missingBuyer++;
+    });
+  });
+
+  let repeatRevenue = 0, repeatOrders = 0;
+  const repeatBuyers = new Set();
+  const dailyRepeat = new Map();
+  days.forEach(d => {
+    if(!d.orderList) return;
+    d.orderList.forEach(o => {
+      if(o.c || !o.b || !buyerFirst.has(o.b)) return;
+      if(d.date <= buyerFirst.get(o.b)) return;
+      const rev = (o.items||[]).filter(it => !it.n.includes(kw)).reduce((a,it)=>a+it.r,0);
+      if(rev <= 0) return;
+      repeatRevenue += rev;
+      repeatOrders++;
+      repeatBuyers.add(o.b);
+      dailyRepeat.set(d.date, (dailyRepeat.get(d.date)||0) + rev);
+    });
+  });
+
+  const cost = promo.cost || 0;
+  const roiDirect = cost ? (promoRevenue - cost) / cost * 100 : null;
+  const roiTotal  = cost ? (promoRevenue + repeatRevenue - cost) / cost * 100 : null;
+  const roas      = cost ? promoRevenue / cost * 100 : null;
+
+  // one continuous daily timeline from promo start to the last saved day
+  const allDates = days.map(d=>d.date).sort();
+  const lastDate = allDates[allDates.length-1];
+  const series = [];
+  if(lastDate && promo.start <= lastDate){
+    const cur = new Date(promo.start + 'T00:00:00');
+    const stop = new Date(lastDate + 'T00:00:00');
+    while(cur <= stop){
+      const ds = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+      series.push({ date: ds, promo: dailyPromo.get(ds)||0, repeat: dailyRepeat.get(ds)||0 });
+      cur.setDate(cur.getDate()+1);
+    }
+  }
+
+  return { promoRevenue, promoOrders, promoQty, cancelledOrders,
+    buyerCount: buyerFirst.size, repeatRevenue, repeatOrders,
+    repeatBuyerCount: repeatBuyers.size, cost, roiDirect, roiTotal, roas,
+    series, missingOrderList, missingBuyer };
+}
+
+
+// ---------- Promotion detail breakdown ----------
+// Buckets the promotion's own products by week / day / hour-of-day.
+// Reads day.products (already keyed by full product name, with hourly arrays),
+// so it stays accurate even for mixed carts.
+function buildPromoBreakdown(promo, days, mode){
+  const kw = promo.keyword;
+  const inPeriod = d => d.date >= promo.start && d.date <= promo.end;
+  const buckets = new Map();   // bucketKey -> Map(productName -> {qty, revenue})
+
+  const put = (key, name, qty, revenue) => {
+    if(!buckets.has(key)) buckets.set(key, new Map());
+    const b = buckets.get(key);
+    if(!b.has(name)) b.set(name, { qty: 0, revenue: 0 });
+    const t = b.get(name);
+    t.qty += qty; t.revenue += revenue;
+  };
+
+  days.forEach(d => {
+    if(!inPeriod(d)) return;
+    (d.products || []).forEach(pr => {
+      if(!pr.name.includes(kw)) return;
+      if(mode === 'hourly'){
+        (pr.hourly || []).forEach((v, hr) => {
+          if(v.qty || v.revenue) put(String(hr).padStart(2,'0'), pr.name, v.qty, v.revenue);
+        });
+      } else {
+        put(mode === 'weekly' ? getMondayKey(d.date) : d.date, pr.name, pr.qty, pr.revenue);
+      }
+    });
+  });
+
+  // strip the promotion prefix so the table shows just the option name
+  const shortName = n => {
+    let s = n.startsWith(kw) ? n.slice(kw.length) : n;
+    s = s.replace(/^[\s\-–—]*/, '');
+    const opt = s.match(/\(([^()]*)\)\s*$/);   // last bracket group is the option
+    return (opt ? opt[1] : s).trim() || n;
+  };
+
+  return Array.from(buckets.entries())
+    .sort((a,b) => a[0].localeCompare(b[0]))
+    .map(([key, prodMap]) => {
+      const items = Array.from(prodMap.entries())
+        .map(([name, v]) => ({ name: shortName(name), qty: v.qty, revenue: v.revenue }))
+        .sort((a,b) => b.revenue - a.revenue);
+      return {
+        key,
+        label: mode === 'hourly' ? `${parseInt(key)}시`
+             : mode === 'weekly' ? `${key} 주`
+             : key,
+        items,
+        qty: items.reduce((a,i)=>a+i.qty,0),
+        revenue: items.reduce((a,i)=>a+i.revenue,0)
+      };
+    });
+}
+
+function renderPromoDetail(idx, promo, days, mode){
+  const host = document.getElementById('promoDetailTable' + idx);
+  if(!host) return;
+  const rows = buildPromoBreakdown(promo, days, mode);
+  if(!rows.length){
+    host.innerHTML = '<div class="empty" style="padding:20px 10px;">해당 기간에 판매 기록이 없습니다.</div>';
+    return;
+  }
+  const grand = rows.reduce((a,r)=>a+r.revenue,0) || 1;
+  const head = mode === 'hourly' ? '시간대' : mode === 'weekly' ? '주(월요일 시작)' : '날짜';
+  host.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>${head}</th><th>상품 / 옵션</th>
+        <th class="num">수량</th><th class="num">매출</th><th class="num">비중</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => r.items.map((it, i) => `
+          <tr>
+            <td>${i === 0 ? `<strong>${r.label}</strong>` : ''}</td>
+            <td>${it.name}</td>
+            <td class="num">${it.qty.toLocaleString()}개</td>
+            <td class="num">${fmtWon(it.revenue)}</td>
+            <td class="num">${(it.revenue/grand*100).toFixed(1)}%</td>
+          </tr>`).join('') + `
+          <tr class="promo-sub-total">
+            <td></td><td>소계</td>
+            <td class="num">${r.qty.toLocaleString()}개</td>
+            <td class="num">${fmtWon(r.revenue)}</td>
+            <td class="num">${(r.revenue/grand*100).toFixed(1)}%</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderPromos(days){
+  const wrapEl = document.getElementById('promoCards');
+  promoChartInstances.forEach(c => { try{ c.destroy(); }catch(e){} });
+  promoChartInstances = [];
+
+  loadAllPromos().then(promos => {
+    if(!promos.length){
+      wrapEl.innerHTML = '<div class="empty" style="padding:26px 10px;">등록된 프로모션이 없습니다. 위에서 프로모션 문구·기간·비용을 입력해 등록하세요.</div>';
+      return;
+    }
+    // Re-derive each window on render: uploading more data can extend a promo's
+    // actual run, and the saved dates shouldn't go stale.
+    promos.forEach(p => {
+      if(p.auto === false) return;
+      const period = detectPromoPeriod(p.keyword, days);
+      if(period){ p.start = period.start; p.end = period.end; p.activeDays = period.activeDays; }
+    });
+
+    wrapEl.innerHTML = promos.map((p, i) => {
+      const s = computePromoStats(p, days);
+      const roiCls = v => v === null ? '' : (v >= 0 ? 'up' : 'down');
+      const roiTxt = v => v === null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+      const warn = [];
+      if(s.missingOrderList) warn.push(`기간 내 ${s.missingOrderList}일치 데이터가 구버전 형식이라 제외되었습니다 — 원본을 다시 업로드해 저장하면 반영됩니다.`);
+      if(s.missingBuyer) warn.push(`연락처가 없는 프로모션 주문 ${s.missingBuyer}건은 재구매 추적에서 제외됩니다.`);
+      if(!s.promoOrders && !s.missingOrderList) warn.push('이 기간·문구에 해당하는 주문을 찾지 못했습니다. 식별 문구가 상품명과 일치하는지 확인해주세요.');
+      return `
+        <div class="promo-card">
+          <div class="promo-card-head">
+            <div class="promo-card-title">${p.keyword}</div>
+            <button class="btn-danger" data-promo-del="${i}">삭제</button>
+          </div>
+          <div class="promo-card-period">${p.start} ~ ${p.end}${p.activeDays ? ` · 판매 발생 ${p.activeDays}일` : ''} <span style="opacity:0.6;">(자동 감지)</span> · 비용 ${fmtWon(s.cost)}</div>
+          ${warn.map(w => `<div class="promo-warn">${w}</div>`).join('')}
+          <div class="promo-roi-row">
+            <div class="promo-roi-cell"><div class="lab">ROI (직접 매출)</div>
+              <div class="val ${roiCls(s.roiDirect)}">${roiTxt(s.roiDirect)}</div>
+              <div class="sub">ROAS ${s.roas === null ? '—' : s.roas.toFixed(0) + '%'}</div></div>
+            <div class="promo-roi-cell"><div class="lab">ROI (재구매 포함)</div>
+              <div class="val ${roiCls(s.roiTotal)}">${roiTxt(s.roiTotal)}</div>
+              <div class="sub">재구매 ${fmtWon(s.repeatRevenue)} 합산</div></div>
+            <div class="promo-roi-cell"><div class="lab">프로모션 매출</div>
+              <div class="val">${fmtWon(s.promoRevenue)}</div>
+              <div class="sub">${s.promoOrders}건 · ${s.promoQty}개 · 구매자 ${s.buyerCount}명</div></div>
+            <div class="promo-roi-cell"><div class="lab">이후 재구매</div>
+              <div class="val">${fmtWon(s.repeatRevenue)}</div>
+              <div class="sub">${s.repeatBuyerCount}명이 ${s.repeatOrders}건 재구매</div></div>
+          </div>
+          <div class="promo-detail">
+            프로모션 구매자 <strong>${s.buyerCount}명</strong> 중 <strong>${s.repeatBuyerCount}명(${s.buyerCount ? (s.repeatBuyerCount/s.buyerCount*100).toFixed(1) : 0}%)</strong>이 이후 일반 상품을 재구매했습니다.
+          </div>
+          ${s.series.length ? `<canvas id="promoChart${i}" height="70"></canvas>` : ''}
+          <div class="modal-section">
+            <button class="modal-section-head" data-promo-detail="${i}" aria-expanded="false">
+              <span>상세 내역 보기</span><span class="chev">▸</span>
+            </button>
+            <div class="modal-section-body collapsed" id="promoDetailBody${i}">
+              <div class="granularity-toggle" data-promo-gran="${i}">
+                <button data-mode="daily" class="active">일간</button>
+                <button data-mode="weekly">주간</button>
+              </div>
+              <div style="overflow-x:auto;" id="promoDetailTable${i}"></div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    // charts + delete wiring after DOM is in place
+    promos.forEach((p, i) => {
+      const s = computePromoStats(p, days);
+      const ctx = document.getElementById('promoChart' + i);
+      if(ctx && typeof Chart !== 'undefined' && s.series.length){
+        const PRM = { line:'#29C2AE', fillIdle:'rgba(41,194,174,0.16)', fillHot:'rgba(41,194,174,0.38)' };
+        const RPT = { line:'#000000', fillIdle:'rgba(0,0,0,0.08)',     fillHot:'rgba(0,0,0,0.20)' };
+        const area=(label,data,c)=>({ type:'line', label, data,
+          borderColor:c.line, backgroundColor:c.fillIdle, borderWidth:2, fill:'origin',
+          tension:0.3, pointRadius:2.5, pointHoverRadius:6,
+          pointBackgroundColor:c.line, pointBorderColor:'#fff', pointBorderWidth:1.5 });
+        const chart = new Chart(ctx, {
+          data: { labels: s.series.map(x=>x.date.slice(5)),
+            datasets: [
+              Object.assign(area('프로모션 매출', s.series.map(x=>x.promo), PRM), { order:2 }),
+              Object.assign(area('재구매 매출',   s.series.map(x=>x.repeat), RPT), { order:1 })
+            ]},
+          options: {
+            responsive:true, interaction:{ mode:'index', intersect:false },
+            plugins:{ legend:{ position:'bottom', labels:{ boxWidth:12, font:{size:11}, usePointStyle:true } }, tooltip:{ enabled:false } },
+            scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>(v/10000)+'만' }, grid:{color:'#efefef'} } }
+          }
+        });
+        promoChartInstances.push(chart);
+        attachCursorTooltip(chart, [
+          { label:'프로모션', color:PRM.line, format:v=>fmtWon(v) },
+          { label:'재구매',   color:RPT.line, format:v=>fmtWon(v) }
+        ], makeZOrderHandler(chart, [PRM, RPT], [2,1]));
+      }
+    });
+    wrapEl.querySelectorAll('[data-promo-detail]').forEach(head => {
+      const i = +head.dataset.promoDetail;
+      head.addEventListener('click', () => {
+        const body = document.getElementById('promoDetailBody' + i);
+        const willOpen = body.classList.contains('collapsed');
+        body.classList.toggle('collapsed', !willOpen);
+        head.setAttribute('aria-expanded', String(willOpen));
+        head.querySelector('.chev').textContent = willOpen ? '▾' : '▸';
+        head.querySelector('span').textContent = willOpen ? '상세 내역 숨기기' : '상세 내역 보기';
+        if(willOpen) renderPromoDetail(i, promos[i], days, 'daily');
+      });
+    });
+    wrapEl.querySelectorAll('[data-promo-gran]').forEach(group => {
+      const i = +group.dataset.promoGran;
+      group.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+          renderPromoDetail(i, promos[i], days, b.dataset.mode);
+        });
+      });
+    });
+    wrapEl.querySelectorAll('[data-promo-del]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const p = promos[+btn.dataset.promoDel];
+        if(!confirm(`"${p.keyword}" 프로모션을 삭제할까요? (판매 데이터는 유지됩니다)`)) return;
+        try{ await storageAdapter.delete(promoKey(p)); }catch(err){ console.error(err); }
+        renderPromos(currentDailyRecords);
+      });
+    });
+    // persist any window that shifted, so exports carry the corrected dates
+    promos.forEach(async p => {
+      try{ await storageAdapter.set(promoKey(p), JSON.stringify(p)); }catch(err){ /* non-critical */ }
+    });
+  });
+}
+
+// ---- registration form ----
+document.getElementById('promoAddBtn').addEventListener('click', async () => {
+  const keyword = document.getElementById('promoKeyword').value.trim();
+  const cost = parseInt(document.getElementById('promoCost').value.replace(/[^0-9]/g, '')) || 0;
+  if(!keyword){ alert('프로모션 식별 문구를 입력해주세요.'); return; }
+  if(!cost){ alert('프로모션 비용을 입력해주세요.'); return; }
+  const period = detectPromoPeriod(keyword, currentDailyRecords);
+  if(!period){
+    alert('"' + keyword + '" 문구가 포함된 판매 기록을 찾지 못했습니다.\n식별 문구가 상품명과 일치하는지 확인해주세요.');
+    return;
+  }
+  const promo = { keyword, cost, start: period.start, end: period.end, auto: true, createdAt: Date.now() };
+  try{
+    await setWithRetry(promoKey(promo), JSON.stringify(promo));
+    document.getElementById('promoKeyword').value = '';
+    document.getElementById('promoCost').value = '';
+    renderPromos(currentDailyRecords);
+  }catch(err){
+    alert('프로모션 저장에 실패했습니다: ' + (err && err.message ? err.message : err));
+  }
+});
+
+// Cost is a text field so it can carry thousand separators; reformat as they type.
+const promoCostInput = document.getElementById('promoCost');
+promoCostInput.addEventListener('input', () => {
+  const digits = promoCostInput.value.replace(/[^0-9]/g, '');
+  promoCostInput.value = digits ? Number(digits).toLocaleString('ko-KR') : '';
+});
+promoCostInput.addEventListener('blur', () => {
+  const digits = promoCostInput.value.replace(/[^0-9]/g, '');
+  promoCostInput.value = digits ? Number(digits).toLocaleString('ko-KR') + ' 원' : '';
+});
+promoCostInput.addEventListener('focus', () => {
+  promoCostInput.value = promoCostInput.value.replace(/\s*원$/, '');
+});
+
+// ---- autocomplete: suggest product names containing the typed text ----
+const promoKeywordInput = document.getElementById('promoKeyword');
+const promoSuggestBox = document.getElementById('promoSuggest');
+
+function allProductNames(){
+  const set = new Set();
+  currentDailyRecords.forEach(d => (d.products||[]).forEach(p => set.add(p.name)));
+  return Array.from(set);
+}
+
+// Promotion products are named "<프로모션명> (안내문)(상품 - 옵션)", so the part
+// before the first bracket is the promotion itself. Grouping on that gives one
+// clean suggestion per promotion instead of one per option.
+function promoNameCandidates(){
+  const groups = new Map();   // prefix -> { count, sample }
+  allProductNames().forEach(full => {
+    const cut = full.indexOf('(');
+    const prefix = (cut > 0 ? full.slice(0, cut) : full).trim();
+    if(!prefix) return;
+    if(!groups.has(prefix)) groups.set(prefix, { count: 0, sample: full });
+    groups.get(prefix).count++;
+  });
+  return Array.from(groups.entries())
+    .map(([name, v]) => ({ name, variants: v.count, sample: v.sample }))
+    // a promotion normally spans several option products; show those first
+    .sort((a,b) => b.variants - a.variants || a.name.localeCompare(b.name));
+}
+
+promoKeywordInput.addEventListener('input', () => {
+  const q = promoKeywordInput.value.trim();
+  if(q.length < 1){ promoSuggestBox.style.display='none'; return; }
+  const lower = q.toLowerCase();
+  const hits = promoNameCandidates().filter(c => c.name.toLowerCase().includes(lower)).slice(0, 8);
+  if(!hits.length){ promoSuggestBox.style.display='none'; return; }
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(' + esc(q) + ')', 'gi');
+  promoSuggestBox.innerHTML = hits.map(c =>
+    `<button type="button" data-name="${encodeURIComponent(c.name)}">
+       ${c.name.replace(re, '<span class="hl">$1</span>')}
+       <span class="sg-meta">${c.variants > 1 ? `옵션 ${c.variants}종` : '단일 상품'}</span>
+     </button>`
+  ).join('');
+  promoSuggestBox.style.display = 'block';
+  promoSuggestBox.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      promoKeywordInput.value = decodeURIComponent(b.dataset.name);
+      promoSuggestBox.style.display = 'none';
+      updatePromoPeriodPreview();
+      promoKeywordInput.focus();
+    });
+  });
+});
+function updatePromoPeriodPreview(){
+  const el = document.getElementById('promoPeriodPreview');
+  const kw = promoKeywordInput.value.trim();
+  if(!kw){
+    el.className = 'promo-auto-period';
+    el.textContent = '식별 문구를 입력하면 판매 발생일 기준으로 자동 설정됩니다.';
+    return;
+  }
+  const period = detectPromoPeriod(kw, currentDailyRecords);
+  if(!period){
+    el.className = 'promo-auto-period';
+    el.textContent = '해당 문구가 포함된 판매 기록이 없습니다.';
+    return;
+  }
+  el.className = 'promo-auto-period found';
+  el.innerHTML = `<strong>${period.start} ~ ${period.end}</strong> · 판매 발생 ${period.activeDays}일`;
+}
+
+promoKeywordInput.addEventListener('input', updatePromoPeriodPreview);
+promoKeywordInput.addEventListener('blur', () => setTimeout(() => { promoSuggestBox.style.display='none'; }, 180));
+promoKeywordInput.addEventListener('keydown', e => { if(e.key === 'Escape') promoSuggestBox.style.display='none'; });
+
+// ---------- Cursor-following chart tooltip ----------
+// Chart.js' built-in tooltip anchors to the chart, not the pointer. This one
+// tracks the cursor, sits just above-right of it, and only appears while the
+// pointer is genuinely near a plotted point.
+const TIP_RADIUS = 70;   // px from the nearest point before the tip hides
+const TIP_OFFSET = 16;   // gap between cursor and tip corner
+
+function getChartTip(){ return document.getElementById('chartTip'); }
+function hideChartTip(){ const t = getChartTip(); if(t) t.style.display = 'none'; }
+
+/**
+ * @param chart      Chart.js instance
+ * @param series     [{label, color, axis, format(v)}] in dataset order
+ * @param onNear     optional (activeDatasetIndex|null, pointIndex|null) => void
+ */
+function attachCursorTooltip(chart, series, onNear){
+  const canvas = chart.canvas;
+  const tip = getChartTip();
+  if(!canvas || !tip) return;
+
+  const move = (ev) => {
+    const pts = chart.getElementsAtEventForMode(ev, 'index', { intersect: false }, true);
+    if(!pts.length){ tip.style.display='none'; if(onNear) onNear(null, null); return; }
+
+    const rect = canvas.getBoundingClientRect();
+    const mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
+
+    // distance to each dataset's point at this index; nearest one wins
+    let best = null;
+    pts.forEach(pt => {
+      const el = pt.element;
+      const d = Math.hypot(el.x - mx, el.y - my);
+      if(!best || d < best.d) best = { d, idx: pt.datasetIndex };
+    });
+    if(!best || best.d > TIP_RADIUS){ tip.style.display='none'; if(onNear) onNear(null, null); return; }
+
+    const i = pts[0].index;
+    tip.innerHTML =
+      `<div class="tip-title">${chart.data.labels[i]}</div>` +
+      series.map((s, si) => {
+        const v = chart.data.datasets[si].data[i];
+        return `<div class="tip-row ${si === best.idx ? '' : 'dim'}">
+          <span class="tip-key" style="background:${s.color}"></span>
+          <span>${s.label}</span>
+          <span class="tip-val">${s.format(v)}</span>
+        </div>`;
+      }).join('');
+
+    // Sit at the cursor's upper-right, but never rise above the chart itself —
+    // otherwise the box covers the KPI cards sitting directly above it.
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    const ceiling = rect.top;                    // top edge of the canvas, in viewport coords
+    let left = ev.clientX + TIP_OFFSET;
+    let top  = ev.clientY - th - TIP_OFFSET;
+
+    if(left + tw > window.innerWidth - 8) left = ev.clientX - tw - TIP_OFFSET;
+
+    if(top < ceiling){
+      // not enough headroom above the cursor: drop below it, and if that would
+      // run off the bottom, pin to the ceiling instead of overlapping upward
+      const below = ev.clientY + TIP_OFFSET;
+      top = (below + th <= window.innerHeight - 8) ? below : ceiling;
+    }
+    if(top < 8) top = 8;
+
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+
+    if(onNear) onNear(best.idx, i);
+  };
+
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseleave', () => { tip.style.display='none'; if(onNear) onNear(null, null); });
+}
+
+// Promote the hovered series above the other and firm up its fill.
+function makeZOrderHandler(chart, palettes, defaultOrders){
+  return (activeIdx) => {
+    let changed = false;
+    chart.data.datasets.forEach((ds, i) => {
+      const pal = palettes[i];
+      const isActive = activeIdx === i;
+      const wantFill  = isActive ? pal.fillHot : pal.fillIdle;
+      const wantOrder = activeIdx === null ? defaultOrders[i] : (isActive ? 0 : 5);
+      const wantWidth = isActive ? 3 : 2;
+      if(ds.backgroundColor !== wantFill || ds.order !== wantOrder || ds.borderWidth !== wantWidth){
+        ds.backgroundColor = wantFill; ds.order = wantOrder; ds.borderWidth = wantWidth;
+        changed = true;
+      }
+    });
+    if(changed) chart.update('none');
+  };
+}
+
+// ---------- Auto-generated report ----------
+const DOW = ['일','월','화','수','목','금','토'];
+
+function pctStr(cur, prev){
+  const d = fmtPct(cur, prev);
+  if(d === null) return null;
+  return (d >= 0 ? '+' : '') + d.toFixed(1) + '%';
+}
+
+// Assemble the facts once; the HTML view and the copyable text both read from this.
+function buildReportModel(weeks, days){
+  if(!weeks.length) return null;
+  const last = weeks[weeks.length-1];
+  const prev = weeks.length > 1 ? weeks[weeks.length-2] : null;
+
+  // top products this week with share
+  const wkTotal = last.products.reduce((a,p)=>a+p.revenue,0) || 1;
+  const top3 = last.products.slice(0,3).map(p => ({
+    name: p.name, revenue: p.revenue, share: p.revenue/wkTotal*100
+  }));
+
+  // biggest mover vs prev week (absolute revenue change)
+  let riser = null, faller = null;
+  if(prev){
+    const prevMap = new Map(prev.products.map(p => [p.name, p.revenue]));
+    const names = new Set([...last.products.map(p=>p.name), ...prev.products.map(p=>p.name)]);
+    names.forEach(n => {
+      const cur = (last.products.find(p=>p.name===n)||{}).revenue || 0;
+      const was = prevMap.get(n) || 0;
+      const diff = cur - was;
+      // kind lets the wording distinguish a brand-new product from real growth
+      const kind = was === 0 ? 'new' : (cur === 0 ? 'dropped' : (diff > 0 ? 'up' : 'down'));
+      if(!riser || diff > riser.diff) riser = { name:n, diff, cur, was, kind };
+      if(!faller || diff < faller.diff) faller = { name:n, diff, cur, was, kind };
+    });
+    if(riser && riser.diff <= 0) riser = null;
+    if(faller && faller.diff >= 0) faller = null;
+  }
+
+  // best day within the last week
+  const lastWeekDays = days.filter(d => d.date >= last.weekStart && d.date <= last.weekEnd);
+  let bestDay = null;
+  lastWeekDays.forEach(d => { if(!bestDay || d.revenue > bestDay.revenue) bestDay = d; });
+  if(bestDay && bestDay.revenue <= 0) bestDay = null;   // nothing sold — don't report a "best" day
+
+  // peak hour across the last week
+  const hourTotals = Array.from({length:24}, () => 0);
+  lastWeekDays.forEach(d => (d.products||[]).forEach(p => (p.hourly||[]).forEach((v,i)=>{ hourTotals[i]+=v.revenue; })));
+  let peakHour = -1, peakVal = 0;
+  hourTotals.forEach((v,i)=>{ if(v>peakVal){ peakVal=v; peakHour=i; } });
+
+  // top payment method
+  const topPay = last.paymentMethods[0] || null;
+  const payTotal = last.paymentMethods.reduce((a,m)=>a+m.count,0) || 1;
+
+  // A week with fewer than 7 days of data is still filling up; comparing its
+  // total against a complete week reads as a crash when it isn't one. Flag it,
+  // and also offer a same-length comparison so the number is actually usable.
+  const partial = last.dayCount < 7;
+  let paceNote = null;
+  if(partial && prev){
+    const n = last.dayCount;
+    const prevFirstN = days
+      .filter(d => d.date >= prev.weekStart && d.date <= prev.weekEnd)
+      .sort((a,b) => a.date.localeCompare(b.date))
+      .slice(0, n)
+      .reduce((a,d) => a + d.revenue, 0);
+    if(prevFirstN > 0){
+      paceNote = { days: n, prevSameDays: prevFirstN, pct: fmtPct(last.revenue, prevFirstN) };
+    }
+  }
+
+  return { last, prev, top3, riser, faller, bestDay, peakHour, peakVal, topPay, payTotal,
+    partial, paceNote,
+    totalRevenue: weeks.reduce((a,w)=>a+w.revenue,0), weekCount: weeks.length };
+}
+
+function renderReport(weeks, days){
+  const el = document.getElementById('reportContent');
+  const m = buildReportModel(weeks, days);
+  if(!m){ el.innerHTML=''; return; }
+  const { last, prev } = m;
+
+  const delta = (cur, was) => {
+    if(!prev || m.partial) return '';   // partial week vs full week isn't a fair comparison
+    const d = fmtPct(cur, was);
+    if(d === null) return '';
+    const cls = d > 0.05 ? 'up' : d < -0.05 ? 'down' : 'flat';
+    const arrow = d > 0.05 ? '▲' : d < -0.05 ? '▼' : '—';
+    return `<span class="rp-delta ${cls}">${arrow} ${Math.abs(d).toFixed(1)}%</span>`;
+  };
+
+  // ---- Tier 1: the single number that matters, plus the week it covers ----
+  const headline = `
+    <div class="rp-head">
+      <div class="rp-head-label">${last.label} 주간 순매출${prev ? `<span class="rp-vs">vs ${prev.label}</span>` : ''}</div>
+      <div class="rp-head-value">${fmtWon(last.revenue)} ${m.partial ? '' : delta(last.revenue, prev && prev.revenue)}</div>
+      ${m.partial ? `<div class="rp-warn">진행 중인 주 · ${last.dayCount}일치 데이터만 반영됨${
+        m.paceNote ? ` — 전주 같은 ${m.paceNote.days}일 구간 ${fmtWon(m.paceNote.prevSameDays)} 대비 <strong>${
+          (m.paceNote.pct >= 0 ? '+' : '') + m.paceNote.pct.toFixed(1)}%</strong>` : ' — 전주와 단순 비교는 부정확합니다'
+      }</div>` : ''}
+    </div>`;
+
+  // ---- Tier 2: supporting metrics, equal weight ----
+  const stats = `
+    <div class="rp-stats">
+      <div class="rp-stat"><div class="rp-stat-label">주문 건수</div>
+        <div class="rp-stat-value">${last.orderCount.toLocaleString()}건 ${delta(last.orderCount, prev && prev.orderCount)}</div></div>
+      <div class="rp-stat"><div class="rp-stat-label">평균 객단가</div>
+        <div class="rp-stat-value">${fmtWon(last.avgOrder)} ${delta(last.avgOrder, prev && prev.avgOrder)}</div></div>
+      <div class="rp-stat"><div class="rp-stat-label">환불율</div>
+        <div class="rp-stat-value">${last.refundRate.toFixed(1)}%
+          <span class="rp-sub">${last.cancelledOrderCount}건 · ${fmtWon(last.cancelledRevenue)}</span></div></div>
+    </div>`;
+
+  // ---- Tier 3: what changed — only rendered when there's an actual mover ----
+  let movers = '';
+  if(m.riser || m.faller){
+  const MOVER = { up:['상승','up'], down:['하락','down'], new:['신규','up'], dropped:['판매중단','down'] };
+    const row = (mv, dir) => {
+      if(!mv) return '';
+      const [text, tone] = MOVER[mv.kind] || MOVER[dir];
+      return `
+      <div class="rp-mover">
+        <span class="rp-mover-tag ${tone}">${text}</span>
+        <span class="rp-mover-name">${mv.name}</span>
+        <span class="rp-mover-num">${mv.kind === 'new' ? '신규 진입' : fmtWon(mv.was)} → <strong>${fmtWon(mv.cur)}</strong>
+          <span class="${tone}">${mv.diff > 0 ? '+' : '−'}${fmtWon(Math.abs(mv.diff)).slice(1)}</span></span>
+      </div>`;
+    };
+    movers = `<div class="rp-block"><div class="rp-block-title">전주 대비 변화</div>${row(m.riser,'up')}${row(m.faller,'down')}</div>`;
+  }
+
+  // ---- Tier 3: top products with share bars ----
+  const maxShare = m.top3.length ? m.top3[0].share : 1;
+  const products = m.top3.length ? `
+    <div class="rp-block"><div class="rp-block-title">주력 상품</div>
+      ${m.top3.map((t,i) => `
+        <div class="rp-prod">
+          <span class="rp-prod-rank">${i+1}</span>
+          <span class="rp-prod-name">${t.name}</span>
+          <span class="rp-prod-bar"><span style="width:${(t.share/maxShare*100).toFixed(1)}%"></span></span>
+          <span class="rp-prod-num">${t.share.toFixed(1)}%<span class="rp-sub">${fmtWon(t.revenue)}</span></span>
+        </div>`).join('')}
+    </div>` : '';
+
+  // ---- Tier 4: contextual details, smallest ----
+  const bits = [];
+  if(m.bestDay){
+    const dow = DOW[new Date(m.bestDay.date+'T00:00:00').getDay()];
+    bits.push(`최고 매출일 <strong>${m.bestDay.date}(${dow})</strong> ${fmtWon(m.bestDay.revenue)}`);
+  }
+  if(m.peakHour >= 0) bits.push(`피크 시간대 <strong>${m.peakHour}–${m.peakHour+1}시</strong>`);
+  if(m.topPay) bits.push(`${m.topPay.method} <strong>${(m.topPay.count/m.payTotal*100).toFixed(0)}%</strong> 등 ${last.paymentMethods.length}종`);
+  const details = bits.length ? `<div class="rp-details">${bits.join('<span class="rp-dot">·</span>')}</div>` : '';
+
+  const foot = `<div class="rp-foot">누적 ${m.weekCount}주 · 총 순매출 ${fmtWon(m.totalRevenue)} · ${new Date().toLocaleString('ko-KR')} 생성</div>`;
+
+  el.innerHTML = headline + stats + movers + products + details + foot;
+}
+
+function reportAsText(){
+  const m = buildReportModel(currentWeeks, currentDailyRecords);
+  if(!m) return '';
+  const { last, prev } = m;
+  const L = [];
+  L.push(`[주간 판매 리포트] ${last.label}${m.partial?` *진행 중 (${last.dayCount}일치)`:''}`);
+  L.push(`- 순매출 ${fmtWon(last.revenue)}${(!m.partial && prev)?` (전주 대비 ${pctStr(last.revenue,prev.revenue)})`:''}`);
+  if(m.partial && m.paceNote){
+    L.push(`  · 전주 같은 ${m.paceNote.days}일 구간 ${fmtWon(m.paceNote.prevSameDays)} 대비 ${(m.paceNote.pct>=0?'+':'')+m.paceNote.pct.toFixed(1)}%`);
+  }
+  L.push(`- 주문 ${last.orderCount.toLocaleString()}건${(!m.partial && prev)?` (${pctStr(last.orderCount,prev.orderCount)})`:''} · 객단가 ${fmtWon(last.avgOrder)}`);
+  L.push(`- 환불 ${last.cancelledOrderCount}건 / ${fmtWon(last.cancelledRevenue)} (환불율 ${last.refundRate.toFixed(1)}%)`);
+  m.top3.forEach((t,i)=>L.push(`- TOP${i+1} ${t.name}: ${fmtWon(t.revenue)} (${t.share.toFixed(1)}%)`));
+  const LBL = { up:'상승', down:'하락', new:'신규', dropped:'판매중단' };
+  if(m.riser) L.push(`- ${LBL[m.riser.kind]}: ${m.riser.name} ${m.riser.kind==='new'?'신규 진입':fmtWon(m.riser.was)} → ${fmtWon(m.riser.cur)}`);
+  if(m.faller) L.push(`- ${LBL[m.faller.kind]}: ${m.faller.name} ${fmtWon(m.faller.was)} → ${fmtWon(m.faller.cur)}`);
+  if(m.bestDay) L.push(`- 최고 매출일: ${m.bestDay.date} ${fmtWon(m.bestDay.revenue)}`);
+  if(m.peakHour>=0) L.push(`- 피크 시간대: ${m.peakHour}시~${m.peakHour+1}시`);
+  L.push(`(누적 ${m.weekCount}주 · 총 순매출 ${fmtWon(m.totalRevenue)})`);
+  return L.join('\n');
+}
+
+document.getElementById('copyReportBtn').addEventListener('click', async () => {
+  const text = reportAsText();
+  if(!text){ alert('복사할 리포트가 없습니다. 데이터를 먼저 올려주세요.'); return; }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('요약이 복사되었습니다. 메신저나 이메일에 붙여넣으세요.');
+  }catch(err){
+    // clipboard API needs a secure context; fall back to a selectable prompt
+    window.prompt('아래 내용을 직접 복사하세요 (Ctrl+C):', text);
+  }
+});
+
+document.getElementById('printReportBtn').addEventListener('click', () => {
+  // open every section so the printout is complete, then restore
+  hideChartTip();
+  const collapsed = [...document.querySelectorAll('.panel-body.collapsed, .modal-section-body.collapsed')];
+  collapsed.forEach(el => el.classList.remove('collapsed'));
+  requestAnimationFrame(() => {
+    nudgeCharts();
+    setTimeout(() => {
+      window.print();
+      collapsed.forEach(el => el.classList.add('collapsed'));
+    }, 250);
+  });
+});
+
+// ---------- Collapsible sections ----------
+// Charts sized inside a hidden container render at 0 height, so any chart in a
+// newly-expanded section needs a resize nudge once it becomes visible.
+function nudgeCharts(){
+  [chartInstance, dailyChartInstance, refundChartInstance, dailyProductModalChartInstance]
+    .forEach(c => { if(c){ try{ c.resize(); }catch(e){} } });
+}
+
+document.querySelectorAll('.collapse-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const body = document.getElementById(btn.dataset.target);
+    if(!body) return;
+    const willOpen = body.classList.contains('collapsed');
+    body.classList.toggle('collapsed', !willOpen);
+    btn.setAttribute('aria-expanded', String(willOpen));
+    btn.textContent = willOpen ? '▾' : '▸';
+    hideChartTip();
+    if(willOpen) requestAnimationFrame(nudgeCharts);
+  });
+});
+
+document.querySelectorAll('.modal-section-head').forEach(head => {
+  head.addEventListener('click', () => {
+    const body = document.getElementById(head.dataset.target);
+    if(!body) return;
+    const willOpen = body.classList.contains('collapsed');
+    body.classList.toggle('collapsed', !willOpen);
+    head.setAttribute('aria-expanded', String(willOpen));
+    head.querySelector('.chev').textContent = willOpen ? '▾' : '▸';
+    head.querySelector('span').textContent = willOpen ? '세부 내역 숨기기' : '세부 내역 보기';
+  });
+});
+
+renderStorageBanner();
+loadAndRender();
+
+// ---------- 데모 데이터 자동 로드 (배포 환경에서만 동작 — file://에서는 fetch 차단) ----------
+(async function demoAutoload(){
+  try{
+    const urls = ['demo-sales-week1.csv','demo-sales-week2.csv','demo-sales-week3.csv'];
+    const files = await Promise.all(urls.map(async (u) => {
+      const r = await fetch(u);
+      if(!r.ok) throw new Error(u);
+      const b = await r.blob();
+      return new File([b], u, {type:'text/csv'});
+    }));
+    handleFiles(files);
+    document.getElementById('demoBanner').style.display = 'block';
+    // 파싱이 끝나 pending 3건이 렌더되면 자동 저장 → 대시보드 즉시 생성
+    let tries = 0;
+    const timer = setInterval(() => {
+      tries++;
+      const btn = document.getElementById('saveAllDaily');
+      if(btn && pendingDaily.length >= urls.length){
+        clearInterval(timer);
+        btn.click();
+      } else if(tries > 40){ clearInterval(timer); }
+    }, 250);
+  }catch(e){ /* 데모 파일 없음/로컬 열람 — 조용히 생략 */ }
+})();
+</script>
+</body>
+</html>

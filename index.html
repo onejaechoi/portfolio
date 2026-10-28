@@ -4,7 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>WONJAE CHOI — Project Manager</title>
-<meta name="description" content="최원재 — 대형 아웃도어 행사 기획·운영 PM 포트폴리오. 문제를 파악하고, 해결책을 제시하고, 결과를 만듭니다.">
+<meta name="description" content="최원재 — 대형 아웃도어 행사 기획·운영 PM 포트폴리오. 연 10개 대회·누적 12,600명, 3,300명 규모 대회 현장 총괄.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="WONJAE CHOI — Project Manager">
+<meta property="og:description" content="대형 아웃도어 행사 기획·운영 PM 포트폴리오. 연 10개 대회·누적 12,600명, 3,300명 규모 대회 현장 총괄.">
+<meta property="og:url" content="https://onejaechoi.github.io/portfolio/">
+<meta property="og:image" content="https://onejaechoi.github.io/portfolio/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WONJAE CHOI — Project Manager">
+<meta name="twitter:description" content="대형 아웃도어 행사 기획·운영 PM 포트폴리오.">
+<meta name="twitter:image" content="https://onejaechoi.github.io/portfolio/assets/og.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root{
@@ -77,20 +92,6 @@
     transition:color .25s;
   }
   nav#site-nav button:hover{color:var(--white)}
-
-  /* 4. 단계 영역 — 버튼만 만들어 두고 숨김 */
-  #category-bar{
-    position:fixed;top:96px;left:50%;transform:translateX(-50%);z-index:10;
-    display:flex;gap:4px;padding:6px;border-radius:999px;
-    background:var(--pill);backdrop-filter:blur(12px);
-    visibility:hidden;                        /* ← 일단 숨김. 필요 시 이 줄만 제거 */
-  }
-  #category-bar button{
-    background:none;border:0;cursor:pointer;font:inherit;
-    font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--dimmer);padding:8px 18px;border-radius:999px;transition:.25s;
-  }
-  #category-bar button.active,#category-bar button:hover{color:var(--white);background:rgba(255,255,255,.12)}
 
   /* ── 1-1 ~ 1-4. 프로젝트 정보 블록 ────────────────────────── */
   #project-info{
@@ -279,9 +280,11 @@
   .card-modal .btn-close{position:absolute;top:18px;right:18px}
   .avatar{
     width:96px;height:96px;border-radius:50%;margin:0 auto 18px;
-    border:1.5px dashed rgba(255,255,255,.25);background:rgba(255,255,255,.04);
+    border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.04);
     display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);
+    overflow:hidden;
   }
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
   .card-modal h2{
     font-size:25.5px;font-weight:300;letter-spacing:.28em;text-transform:uppercase;
     line-height:1.4;margin-bottom:4px;
@@ -346,26 +349,41 @@
   .rs-body li+li{margin-top:5px}
   .rs-body strong{color:#fff}
 
-  /* ── 관리자 모드 (숨김 기능: 좌상단 이름 5회 연속 클릭) ────── */
-  #admin-bar{
-    position:fixed;right:22px;bottom:96px;z-index:80;
-    display:none;gap:8px;align-items:center;
+  /* ── SKILLS 모달 ─────────────────────────────────────────── */
+  #modal-skills .modal-box{
+    width:min(880px,100%);max-height:90vh;display:flex;flex-direction:column;
+    background:var(--card);border:1px solid var(--card-border);border-radius:16px;overflow:hidden;
   }
-  body.admin #admin-bar{display:flex}
-  #admin-bar .admin-tag{
-    font-size:12px;font-weight:800;letter-spacing:.16em;color:#ffd166;
-    border:1px solid rgba(255,209,102,.4);border-radius:999px;padding:6px 12px;
-    background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+  .sk-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;border-bottom:1px solid var(--card-border);
   }
-  #admin-bar button{
-    background:rgba(20,20,20,.75);backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,.2);border-radius:999px;
-    color:#fff;font:inherit;font-size:14px;font-weight:700;letter-spacing:.06em;
-    padding:9px 18px;cursor:pointer;transition:.25s;
+  .sk-header h2{font-size:18.5px;font-weight:800}
+  .sk-body{overflow:auto;padding:34px 42px;background:#0d0e10}
+  .sk-body section+section{margin-top:38px}
+  .sk-cat{
+    font-size:15px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    color:#fff;border-bottom:1px solid var(--card-border);padding-bottom:8px;margin:0 0 14px;
   }
-  #admin-bar button:hover{background:rgba(255,255,255,.18)}
-  body.admin [data-edit]{outline:1px dashed rgba(255,209,102,.55);outline-offset:4px;cursor:text;border-radius:2px}
-  body.admin [data-edit]:focus{outline:1.5px solid rgba(255,209,102,.9)}
+  .sk-lead{font-size:15.5px;line-height:1.75;color:rgba(255,255,255,.85);margin-bottom:18px}
+  .sk-lead strong{color:#fff}
+  .sk-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sk-card{
+    display:flex;flex-direction:column;gap:8px;padding:20px 22px;
+    border:1px solid rgba(255,255,255,.14);border-radius:14px;
+    background:rgba(255,255,255,.05);text-decoration:none;color:inherit;transition:.25s;
+  }
+  .sk-card:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+  .sk-card-tag{font-size:11.5px;font-weight:800;letter-spacing:.22em;color:var(--dimmer)}
+  .sk-card-name{font-size:17px;font-weight:800;color:#fff}
+  .sk-card p{font-size:14.5px;line-height:1.65;color:rgba(255,255,255,.78)}
+  .sk-card-cta{margin-top:auto;padding-top:8px;font-size:14px;font-weight:700;color:#ffd166}
+  .sk-video{
+    position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.12);background:#000;
+  }
+  .sk-video iframe{width:100%;height:100%;border:0;display:block}
+  .sk-caption{margin-top:10px;font-size:13.5px;color:var(--dimmer);line-height:1.6}
 
   /* 오토 티저 카드 — 진입 몇 초 후 문제 후킹 (tease 필드가 있는 프로젝트만) */
   #teaser{
@@ -452,6 +470,12 @@
     .mp-visual .img-placeholder{min-height:190px}
     header{padding:20px 22px}
     nav#site-nav{gap:16px}
+  }
+  @media (max-width:520px){
+    header{padding:14px 16px;flex-wrap:wrap;row-gap:8px}
+    #brand{font-size:13px;letter-spacing:.1em}
+    nav#site-nav{gap:14px;width:100%;justify-content:flex-start}
+    nav#site-nav button{font-size:11.5px;letter-spacing:.1em}
     .rs-body{padding:26px 22px}
     .card-modal .modal-box{padding:38px 26px 34px}
   }
@@ -484,33 +508,25 @@
   <nav id="site-nav">
     <button data-open="modal-about">About</button>
     <button data-open="modal-resume">Resume</button>
+    <button data-open="modal-skills">Skills</button>
     <button data-open="modal-connect">Connect</button>
   </nav>
 </header>
 
-<!-- 4. 단계 영역 — 형태만 만들어 두고 숨김 (visibility:hidden) -->
-<div id="category-bar" aria-hidden="true">
-  <button class="active">Trail</button>
-  <button>Snow</button>
-  <button>Road</button>
-  <button>Camp</button>
-  <button>Press</button>
-</div>
-
 <!-- 1-1 제목 · 1-2 R&R/상세 · 1-3 성과 · 1-4 버튼 -->
 <main id="project-info">
   <div id="project-eyebrow"></div>
-  <h1 id="project-title" data-edit="title"></h1>
+  <h1 id="project-title"></h1>
   <div id="project-rnr">
     <span class="rnr-label">R&amp;R</span>
-    <span class="rnr-text" id="rnr-text" data-edit="rnr"></span>
+    <span class="rnr-text" id="rnr-text"></span>
   </div>
-  <p id="project-desc" data-edit="desc"></p>
+  <p id="project-desc"></p>
   <div id="project-result">
     <span class="rnr-label">성과</span>
     <div class="result-body">
-      <div class="label" data-edit="resultLabel"></div>
-      <div class="sub" data-edit="resultSub"></div>
+      <div class="label"></div>
+      <div class="sub"></div>
     </div>
   </div>
   <button id="btn-problem" data-open="modal-problem">문제와 해결책</button>
@@ -534,15 +550,15 @@
       <div class="mp-text">
         <section>
           <h3><span>Problem</span> — 문제</h3>
-          <p id="mp-problem" data-edit="problem"></p>
+          <p id="mp-problem"></p>
         </section>
         <section>
           <h3><span>Solution</span> — 해결책</h3>
-          <p id="mp-solution" data-edit="solution"></p>
+          <p id="mp-solution"></p>
         </section>
         <section>
           <h3><span>Result</span> — 결과</h3>
-          <p id="mp-result" data-edit="result"></p>
+          <p id="mp-result"></p>
         </section>
       </div>
     </div>
@@ -553,22 +569,18 @@
 <div class="modal card-modal" id="modal-about">
   <div class="modal-box">
     <button class="btn-close" data-close>&#10005;</button>
-    <div class="avatar"><!-- 프로필 사진 자리 (준비 중) -->
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-      </svg>
-    </div>
+    <div class="avatar"><img src="assets/profile.jpg" alt="최원재 프로필 사진"></div>
     <h2>Wonjae<br>Choi</h2>
     <div class="role">Project Manager</div>
     <div class="bio">
-      <p>최원재는 국내 최대 규모 트레일 러닝 행사 기획·운영사 <strong>에코라인</strong>에서 PM으로 일하며, 몽벨·다이나핏·코오롱 등 브랜드 협업 행사를 포함한 <strong>총 10개 대회, 누적 참가자 12,500명+</strong>의 프로젝트를 이끌었다.</p>
-      <p>소수 정예 조직의 한계를 시스템으로 극복하는 것이 그의 방식이다. 자체 준비 시스템과 통합 스케줄러를 직접 기획·도입해 <strong>최대 4개의 대형 프로젝트를 딜레이 없이 동시 운영</strong>했고, <strong>참가자 3,300명 규모</strong> 대회의 현장을 총괄했다.</p>
-      <p>해외 생산업체·글로벌 브랜드와의 다이렉트 소싱과 스폰서십 커뮤니케이션, Cafe24·아임웹 기반 이커머스 운영, 디자인·미디어 외주 디렉팅까지 — <strong>문제를 파악하고, 해결책을 설계하고, 결과를 만드는 일</strong>을 한다.</p>
+      <p>국내 최대 규모 트레일 러닝 행사 기획·운영사 <strong>에코라인</strong>에서 PM으로 일하며, 태백시 주최·문화체육관광부 후원 대회의 운영사로서, 몽벨·다이나핏·코오롱 등 브랜드 협업 행사를 포함한 <strong>총 10개 대회, 누적 참가자 12,600명</strong>의 프로젝트를 이끌었습니다.</p>
+      <p>소수 정예 조직의 한계를 시스템으로 극복하는 것이 저의 방식입니다. 자체 준비 시스템과 통합 스케줄러를 직접 기획·도입해 <strong>최대 4개의 대형 프로젝트를 딜레이 없이 동시 운영</strong>했고, <strong>참가자 3,300명 규모</strong> 대회의 현장을 총괄했습니다.</p>
+      <p>해외 생산업체·글로벌 브랜드와의 다이렉트 소싱과 스폰서십 커뮤니케이션, Cafe24·아임웹 기반 참가 접수 플랫폼 운영, 디자인·미디어 외주 디렉팅까지 — <strong>문제를 파악하고, 해결책을 설계하고, 결과를 만드는 일</strong>을 합니다.</p>
     </div>
     <div class="meta-line">
       학력 · 국립공주대학교 영상학과 학사 (2023.03 졸업)<br>
-      어학 · 영어 비즈니스 레벨 / 일어 회화<br>
-      툴 · Figma · Photoshop · Illustrator · Premiere Pro · Cafe24 · 아임웹 · Gemini · Genspark
+      어학 · 비즈니스 영어 (중국 3M·해외 생산업체와 직접 협상) / 일어 회화<br>
+      툴 · Claude · Figma · Photoshop · Illustrator · Premiere Pro · Cafe24 · 아임웹 · Gemini · Genspark
     </div>
   </div>
 </div>
@@ -595,17 +607,17 @@
 
       <h2>핵심 역량 요약</h2>
       <ul>
-        <li><strong>프로세스 시스템화 및 다중 프로젝트 통제</strong> — 자체 준비 시스템을 직접 기획·도입해 최대 <strong>4개</strong>의 대형 아웃도어 프로젝트를 딜레이 없이 동시 준비, 최대 <strong>3,300명</strong> 규모 대회 현장 총괄</li>
-        <li><strong>해외 다이렉트 소싱 및 글로벌 파트너십</strong> — 해외 생산업체·글로벌 브랜드와 직접 소통하며 물자 소싱, 물류 납기 관리, 스폰서십 유치 전 과정 주도</li>
-        <li><strong>이커머스 플랫폼 운영 및 외주 파트 디렉팅</strong> — Cafe24·아임웹으로 누적 <strong>12,500명+</strong> 참가자 DB·트래픽 통제, 디자인·미디어 외주의 타임라인과 산출물 퀄리티 관리</li>
-        <li><strong>AI·디자인 툴 기반의 실무형 PMO 역량</strong> — AI 툴(Gemini·Genspark) 기반 기획 문서 자동화, 포토샵·피그마·프리미어 실무 이해로 소통 비용 단축</li>
+        <li><strong>다중 대회 동시 기획·운영</strong> — 3~4명 조직에서 연 10개 트레일러닝 대회(누적 <strong>12,600명</strong>)를 공백 없이 기획·운영. 최대 <strong>4개</strong> 대회를 동시에 준비하는 시즌에도 <strong>10개 대회 모두 예정일에 정상 개최</strong></li>
+        <li><strong>대규모 현장 총괄 및 운영 체계 구축</strong> — 참가자 <strong>3,300명</strong>·스태프 <strong>150명</strong> 규모 대회 현장 총괄. 설치/물자/스태프/디자인 <strong>4개 파트</strong>로 운영 체계를 처음 만들었고, 그 체계로 차기 대회 목표를 <strong>4,200명</strong>으로 상향</li>
+        <li><strong>지자체·브랜드·스폰서 커뮤니케이션</strong> — 태백시 주최 대회(문화체육관광부·국민체육진흥공단 후원)의 운영사로 태백시 실무자와 협의 및 행정 서류 대응, 코오롱 트레일 런(<strong>1,700명</strong>) 운영 대행, 다이나핏 메인 후원 관리(2년 연속) — 세 유형의 이해관계자를 기획부터 결과 보고까지 직접 응대</li>
+        <li><strong>해외 소싱 및 글로벌 스폰서십</strong> — 중국 <strong>3M</strong> 본사 스폰서십 유치(현장 부스 운영·참가자 전원 리워드 <strong>1,500개분</strong> 확보). 메달·의류·레이스 물품을 해외 생산업체에서 직접 소싱 — 견적 비교·단가 협상·발주·납기 관리·현장 수령까지 전 과정 담당</li>
       </ul>
 
       <h2>경력 상세 — 에코라인 (Ecoline) · 2024.03 ~ 2026.07</h2>
       <p style="margin-bottom:4px">국내 최대 규모 트레일 러닝 행사 기획·운영 사업체 · <strong>기획 및 운영 / PM</strong></p>
 
       <h3>2025 다이나핏 태백 트레일 기획 및 운영</h3>
-      <div class="rs-sub">2025.06 ~ 2025.09 · 참가자 3,300명 (전년 대비 50% 증가) · 현장 스태프 약 150명</div>
+      <div class="rs-sub">2025.06 ~ 2025.09 · 참가자 3,300명 (전년 대비 57% 증가) · 현장 스태프 약 150명 · 태백시 주최 / 문화체육관광부·국민체육진흥공단 후원 / 다이나핏 메인 후원</div>
       <ul>
         <li><strong>통합 프로세스 구축</strong> — 전 대회 공통 필수 일정을 추출해 '일괄 대회 준비 시스템 및 통합 스케줄러' 기획·도입, 리드타임 단축과 업무 누락 리스크 최소화</li>
         <li><strong>조직 체계화 및 R&amp;R 수립</strong> — 비정형 업무 방식을 개편, 설치/물자/스태프/디자인 4개 파트로 구조화 및 동시 관리</li>
@@ -613,31 +625,31 @@
       </ul>
 
       <h3>코리아 스노우 트레일 기획 및 운영</h3>
-      <div class="rs-sub">2025.09 ~ 2026.01 · 참가자 1,500명</div>
+      <div class="rs-sub">2025.09 ~ 2026.01 · 참가자 800명 · 태백시 주최 / 문화체육관광부·국민체육진흥공단 후원</div>
       <ul>
-        <li><strong>글로벌 브랜드 협업 주도</strong> — 중국 현지 파트너사 및 중국 3M과 다이렉트 커뮤니케이션 전담, 3M 본사 인력의 현장 부스 운영 성사 및 참가자 전원(1,500명) 리워드 협찬 유치</li>
+        <li><strong>글로벌 브랜드 협업 주도</strong> — 중국 현지 파트너사 및 중국 3M과 다이렉트 커뮤니케이션 전담, 3M 본사 인력의 현장 부스 운영 성사 및 참가자 전원(800명) 리워드 1,500개분 협찬 유치</li>
         <li><strong>해외 물자 직접 소싱·물류 총괄</strong> — 메달·의류·레이스 물품을 해외 생산업체와 직접 컨택해 조달, 견적 비교→단가 협상→발주→납기 관리→현장 수령까지 전 과정 총괄</li>
         <li><strong>파트너십 파이프라인 확장</strong> — 3M 연속 후원 논의 및 전체 대회 스케줄에 대한 해외 업체 스폰서십 논의 확대 기여</li>
       </ul>
 
       <h3>다중 트레일러닝 프로젝트 상시 기획/운영 및 백오피스 총괄</h3>
-      <div class="rs-sub">2024.03 ~ 2026.07 · 총 10개 대회 · 누적 참가자 약 12,500명</div>
+      <div class="rs-sub">2024.03 ~ 2026.07 · 총 10개 대회 · 누적 참가자 약 12,600명</div>
       <ul>
         <li><strong>다중 프로젝트 타임라인 동시 관리</strong> — 몽벨·다이나핏·코오롱 등 브랜드 협업 및 자체 행사 10개 대회를 연중 공백 없이 연속 운영, 최대 4개 중첩 시즌에도 무지연 완수</li>
-        <li><strong>이커머스 세팅 및 참가자 DB 관리</strong> — Cafe24·아임웹 페이지 디자인·인터페이스 적용, 티켓 상품 등록·재고 관리 직접 수행</li>
+        <li><strong>참가 접수 플랫폼 세팅 및 참가자 DB 관리</strong> — Cafe24·아임웹 페이지 디자인·인터페이스 적용, 티켓 상품 등록·재고 관리 직접 수행</li>
         <li><strong>비주얼 디렉팅 및 미디어 외주 총괄</strong> — 시각 제작물 기획 의도 수립과 퀄리티 관리, 사진/영상팀 발굴·견적 협상·투입 배분·타임라인 매니징</li>
       </ul>
 
       <h2>연간 프로젝트 운영 포트폴리오</h2>
       <ul>
-        <li><strong>2024</strong> — 몽벨 씨투 써밋 (100명) · 제1회 다이나핏 태백 트레일 (2,100명) · 제1회 태백 소셜 하이킹 (1,000명)</li>
-        <li><strong>2025</strong> — 제1회 코리아 스노우 트레일 (800명) · 제2회 다이나핏 태백 트레일 (3,300명) · 제1회 베어트레일캠프 (300명) · 제1회 레전드 트레일 (1,000명)</li>
-        <li><strong>2026</strong> — 제2회 코리아 스노우 트레일 (1,000명) · 제1회 코오롱 트레일 런 (1,700명) · 제1회 코리아 나이트 런 (1,500명)</li>
+        <li><strong>2024</strong> — 몽벨 씨투 써밋 (100명) · 다이나핏 태백 트레일 (2,100명) · 태백 소셜 하이킹 (1,000명)</li>
+        <li><strong>2025</strong> — 코리아 스노우 트레일 (800명) · 다이나핏 태백 트레일 (3,300명) · 베어트레일캠프 (300명) · 레전드 트레일 (1,000명)</li>
+        <li><strong>2026</strong> — 코리아 스노우 트레일 (800명) · 코오롱 트레일 런 (1,700명) · 코리아 나이트 런 (1,500명)</li>
       </ul>
 
       <h2>보유 스킬 및 활용 툴</h2>
       <ul>
-        <li><strong>어학</strong> — 영어 비즈니스 레벨 (영문 문서·이메일 능통) · 일어 회화</li>
+        <li><strong>어학</strong> — 비즈니스 영어 (중국 3M·중국 생산업체와 영어로 직접 견적·납기 협상, 영문 이메일·문서 작성) · 일어 회화</li>
         <li><strong>AI·자동화</strong> — Gemini (리서치·문서 초안·커뮤니케이션 정리) · Genspark (제안서·기획서 PPT 초안 자동 생성)</li>
         <li><strong>업무·데이터</strong> — MS Office / Google Workspace (대규모 DB 핸들링, 예산 관리, WBS 문서화)</li>
         <li><strong>디자인·미디어</strong> — Figma (웹 기획·와이어프레임) · Photoshop / Illustrator (디렉팅 및 2차 수정) · Premiere Pro (숏폼·홍보 영상 편집)</li>
@@ -646,15 +658,49 @@
   </div>
 </div>
 
+<!-- 5-2b. SKILLS -->
+<div class="modal" id="modal-skills">
+  <div class="modal-box">
+    <div class="sk-header">
+      <h2>Skills — 기술 활용</h2>
+      <button class="btn-close" data-close>&#10005;</button>
+    </div>
+    <div class="sk-body">
+      <section>
+        <h3 class="sk-cat">AI &middot; 업무 자동화</h3>
+        <p class="sk-lead">반복되는 운영 실무를 직접 만든 웹 도구로 자동화했습니다. 두 도구 모두 실제 대회 운영에 사용한 것이며, AI(Claude)와의 바이브코딩으로 직접 제작했습니다. <strong>데모 데이터가 자동으로 로드되어 있어, 어떤 데이터를 넣으면 어떻게 정리되는지 바로 체험해보실 수 있습니다.</strong></p>
+        <div class="sk-cards">
+          <a class="sk-card" href="skills/tool-index-sorter.html" target="_blank" rel="noopener">
+            <div class="sk-card-tag">TOOL 01 &middot; 실무 사용</div>
+            <div class="sk-card-name">INDEX 참가자 명단 정렬기</div>
+            <p>계측 업체의 원본 기록을 코스별 명단으로 자동 정리하고, 구글폼으로 수집한 변경 요청을 배번 기준으로 자동 매칭&middot;검증합니다. ITRA/UTMB 인덱스 등록 명단 작업에 사용했습니다.</p>
+            <span class="sk-card-cta">데모 데이터로 직접 체험하기 &rarr;</span>
+          </a>
+          <a class="sk-card" href="skills/tool-sales-tracker.html" target="_blank" rel="noopener">
+            <div class="sk-card-tag">TOOL 02 &middot; 실무 사용</div>
+            <div class="sk-card-name">판매 추이 트래커</div>
+            <p>Cafe24 주문 데이터를 올리면 주간 리포트&middot;상품 순위&middot;시간대 분석&middot;프로모션 ROI까지 자동 생성합니다. 판매 현황 집계와 보고에 사용했습니다.</p>
+            <span class="sk-card-cta">데모 데이터로 직접 체험하기 &rarr;</span>
+          </a>
+        </div>
+      </section>
+      <section>
+        <h3 class="sk-cat">영상 제작</h3>
+        <p class="sk-lead">영상학 전공(국립공주대학교)을 기반으로 행사 홍보&middot;스케치 영상의 기획과 편집을 직접 할 수 있습니다. 아래는 기획&middot;연출&middot;편집을 맡았던 뮤직비디오입니다.</p>
+        <div class="sk-video">
+          <iframe src="https://www.youtube.com/embed/tQpOPHoO4rA" title="뮤직비디오 빵댕이 흔들어라 — 워너뮤직코리아 공식 채널" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="sk-caption">기획·연출·편집(감독) &mdash; 뮤직비디오 &lsquo;빵댕이 흔들어라&rsquo;, 워너뮤직코리아 공식 채널 게재 &middot; 채널 구독자 192만 &middot; 조회수 21만회 (2026.08 기준)</p>
+      </section>
+    </div>
+  </div>
+</div>
+
 <!-- 5-3. CONNECT -->
 <div class="modal card-modal" id="modal-connect">
   <div class="modal-box">
     <button class="btn-close" data-close>&#10005;</button>
-    <div class="avatar">
-      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-      </svg>
-    </div>
+    <div class="avatar"><img src="assets/profile.jpg" alt="최원재 프로필 사진"></div>
     <h2>Wonjae<br>Choi</h2>
     <div class="role">Project Manager</div>
     <div class="connect-btns">
@@ -681,13 +727,6 @@
   </div>
 </div>
 
-<!-- 관리자 모드 바 (좌상단 이름을 1.5초 안에 5번 클릭하면 토글) -->
-<div id="admin-bar">
-  <span class="admin-tag">ADMIN</span>
-  <button id="btn-dl">HTML 다운로드</button>
-  <button id="btn-admin-off">편집 종료</button>
-</div>
-
 <!-- 오토 티저 카드 -->
 <div id="teaser">
   <button id="teaser-x" aria-label="닫기">&#10005;</button>
@@ -698,7 +737,7 @@
 
 <div id="toast">복사되었습니다</div>
 
-<!-- ── 프로젝트 데이터 (관리자 모드에서 수정한 내용이 여기에 반영되어 다운로드됨) ──
+<!-- ── 프로젝트 데이터 ──
      정렬: 최신(2026)이 왼쪽 · major = 하이라이트 · ready = 상세 콘텐츠 완성 · video = 유튜브 ID -->
 <script id="projects-data" type="application/json">
 [
@@ -712,10 +751,10 @@
     "rnr": "행사 기획·운영 총괄 PM",
     "video": "tTOfsoADDao",
     "localVideo": "videos/korea-night-run-2026.mp4",
-    "desc": "사 최초의 야간 트레일 러닝 대회. 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었습니다.",
+    "desc": "에코라인 최초의 야간 트레일 러닝 대회(태백시 주최 · 문화체육관광부·국민체육진흥공단 후원). 기획·운영 총괄 PM으로서 야간 환경에 맞춘 안전·운영 체계를 새로 설계하고 대회 전 과정을 이끌었습니다.",
     "resultLabel": "참가자 1,500명 · 스태프 200명",
     "resultSub": "첫 야간 대회 무사고 운영 — 야간 운영 노하우의 사내 자산화",
-    "problem": "<span class='li'>당사 최초로 개최되는 야간 대회로, <strong>사내 레퍼런스 부재에 따른 리스크 예측 및 규모 산정의 어려움</strong> 직면</span><span class='li'>시야 확보 제한, 코스 이탈, 저체온증 등 <strong>야간 환경 특유의 높은 안전 리스크</strong> 가중</span>",
+    "problem": "<span class='li'>에코라인 최초로 개최하는 야간 대회로, <strong>사내 레퍼런스 부재에 따른 리스크 예측 및 규모 산정의 어려움</strong> 직면</span><span class='li'>시야 확보 제한, 코스 이탈, 저체온증 등 <strong>야간 환경 특유의 높은 안전 리스크</strong> 가중</span>",
     "solution": "<span class='li'>국내외 야간 대회 레퍼런스 수집 및 전문가 자문을 바탕으로 <strong>'야간 안전·운영 체계' 신규 기획 및 도입</strong></span><span class='li'>해외 생산업체와의 직접 협의를 통해 <strong>야간 반사 기물 및 야광 코스 마킹 테이프 등 야간 특수 물자 자체 기획 및 조달</strong></span><span class='li'>사전 코스 분석을 통한 <strong>위험 구간별 맞춤형 스태프 배치</strong> 및 현장 안전 관리 시스템 구축</span>",
     "result": "<span class='li'>참가자 <strong>1,500명 규모의 첫 야간 대회 무사고 안전 운영 완수</strong></span><span class='li'><strong>야간 특수 목적 행사 기획 및 안전 관리 노하우의 성공적인 사내 자산화</strong> 달성</span>",
     "assets": [
@@ -769,7 +808,7 @@
     "region": "태백",
     "title": "코리아 스노우 트레일",
     "period": "2025.11 – 2026.01",
-    "scale": "참가자 1,500명",
+    "scale": "참가자 800명",
     "major": true,
     "ready": true,
     "rnr": "해외 물자 소싱·물류 총괄 · 글로벌 스폰서십(중국 3M) 전담",
@@ -777,9 +816,9 @@
     "teaseCta": "협업 및 성과 상세 보기 →",
     "video": "1m_3MEMLFQg",
     "localVideo": "videos/korea-snow-trail-2026.mp4",
-    "desc": "겨울 설상 트레일 러닝 대회. 해외 물자 소싱·물류 전 과정과 글로벌 브랜드(중국 3M) 스폰서십 커뮤니케이션을 전담했습니다.",
-    "resultLabel": "참가자 1,500명 · 스태프 100명",
-    "resultSub": "중국 3M 협업 성사 — 전 참가자 리워드 협찬",
+    "desc": "겨울 설상 트레일 러닝 대회(태백시 주최 · 문화체육관광부·국민체육진흥공단 후원). 해외 물자 소싱·물류 전 과정과 글로벌 브랜드(중국 3M) 스폰서십 커뮤니케이션을 전담했습니다.",
+    "resultLabel": "참가자 800명 · 스태프 100명",
+    "resultSub": "중국 3M 협업 성사 — 전 참가자 리워드 협찬(1,500개분 확보)",
     "problem": "대규모 리워드 물자의 해외 조달 — <strong>비용·납기 리스크</strong>, 글로벌 브랜드와의 <strong>언어·프로세스 장벽</strong>.",
     "assets": [
       { "type": "gallery", "tab": "3M 커뮤니케이션", "items": [
@@ -788,7 +827,7 @@
         { "src": "assets/snow-3m-chat-thanks.jpg", "cap": "행사 종료 후 3M 측이 보내온 감사 메시지" }
       ] },
       { "type": "gallery", "tab": "협찬·현장", "items": [
-        { "src": "assets/snow-3m-beanie.jpg", "cap": "전 참가자(1,500명)에게 협찬된 3M 비니" },
+        { "src": "assets/snow-3m-beanie.jpg", "cap": "전 참가자(800명)에게 협찬된 3M 비니 — 리워드 1,500개분 확보" },
         { "src": "assets/snow-3m-vest.jpg", "cap": "참가자 협찬 리워드 — 3M 콜라보 베스트" },
         { "src": "assets/snow-3m-insta.jpg", "cap": "3M 공식 인스타그램에 게시된 행사 현장 — 공식 계정이 행사를 직접 태그" }
       ] } ],
@@ -812,10 +851,10 @@
     "title": "베어트레일캠프",
     "period": "2025.07 – 2025.10",
     "scale": "참가자 300명",
-    "rnr": "행사 기획·운영 실무 · 이커머스 세팅 총괄",
+    "rnr": "행사 기획·운영 실무 · 참가 접수 플랫폼 세팅 총괄",
     "video": "SrNq3uFG9WU",
     "localVideo": "videos/bear-trail-camp-2025.mp4",
-    "desc": "트레일 러닝과 캠핑을 결합한 신규 포맷 행사. 기획·운영 실무와 참가자 모집 이커머스 세팅을 담당했습니다.",
+    "desc": "트레일 러닝과 캠핑을 결합한 신규 포맷 행사. 기획·운영 실무와 참가자 모집 접수 페이지 세팅을 담당했습니다.",
     "resultLabel": "참가자 300명 · 스태프 30명",
     "resultSub": "신규 포맷(캠프형) 행사 안착"
   },
@@ -833,12 +872,12 @@
     "rnr": "행사 VENUE 기획 운영 총괄 및 전체 행사 실무 운영 기획",
     "video": "L07F4GjIcGY",
     "localVideo": "videos/dynafit-taebaek-2025.mp4",
-    "desc": "국내 최대 규모 트레일 러닝 행사. 기획·운영 PM으로서 설치/물자/운영/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했습니다.",
-    "resultLabel": "참가자 3,300명 · 전년 대비 +50% · 현장 스태프 150명",
+    "desc": "국내 최대 규모 트레일 러닝 행사(태백시 주최 · 문화체육관광부·국민체육진흥공단 후원 · 다이나핏 메인 후원). 기획·운영 PM으로서 설치/물자/스태프/디자인 4개 파트를 구조화·동시 관리하며, 대회 준비 프로세스 설계부터 현장 운영까지 전 과정을 총괄했습니다.",
+    "resultLabel": "참가자 3,300명 · 전년 대비 +57% · 현장 스태프 150명",
     "resultSub": "통합 운영 프로세스 기획·도입 — 차기 대회 타겟 4,200명 상향의 기반",
     "problem": "<span class='li'>회사의 급격한 성장으로 복수 대회의 동시 준비가 필요했으나, 실무진 대비 프로젝트 총괄 PM 인력 부족으로 <strong>업무 병목 현상 발생</strong></span><span class='li'>이로 인한 <strong>전체 리드타임 지연 및 세부 업무 누락 리스크 가중</strong></span>",
-    "solution": "<span class='li'>대회별 공통 필수 일정과 세부 일정을 분리, 다중 프로젝트의 일괄 관리가 가능한 <strong>'통합 업무 관리 시스템' 직접 기획 및 도입</strong></span><span class='li'>행사 준비 과정을 <strong>4개 파트(설치·물자·운영·디자인)로 구조화</strong>하고 전담 인력 배치 및 협업 프로세스를 구축하여 기존 운영 방식의 리스크 최소화</span>",
-    "result": "<span class='li'>당시 최대 규모 '다이나핏 태백 트레일' 성공적 개최 (<strong>참가자 3,300명, 스태프 150명 / 전년 대비 50% 증가</strong>)</span><span class='li'><strong>차기 대회 모객 목표 4,200명 상향 기여</strong> 및 동시 진행 타 프로젝트의 세부 일정 누락 없이 안정적 완수.</span>",
+    "solution": "<span class='li'>대회별 공통 필수 일정과 세부 일정을 분리, 다중 프로젝트의 일괄 관리가 가능한 <strong>'통합 업무 관리 시스템' 직접 기획 및 도입</strong></span><span class='li'>행사 준비 과정을 <strong>4개 파트(설치·물자·스태프·디자인)로 구조화</strong>하고 전담 인력 배치 및 협업 프로세스를 구축하여 기존 운영 방식의 리스크 최소화</span>",
+    "result": "<span class='li'>당시 최대 규모 '다이나핏 태백 트레일' 성공적 개최 (<strong>참가자 3,300명, 스태프 150명 / 전년 대비 57% 증가</strong>)</span><span class='li'><strong>차기 대회 모객 목표 4,200명 상향 기여</strong> 및 동시 진행 타 프로젝트의 세부 일정 누락 없이 안정적 완수.</span>",
     "assets": [
       { "type": "frame", "src": "schedule.html", "tab": "통합 스케줄러", "cap": "다중 프로젝트 통합 관리 문서 — 실제 운영 문서 / 세부내용은 대외비로 마스킹 됨" },
       { "type": "frame", "src": "opsdocs.html", "tab": "행사 세부 관리 서류", "cap": "스태프 정산·일정 및 지점(CP)별 물자 배정 관리 문서 (사내 표준으로 채택) — 품목·인적사항은 대외비 마스킹" }
@@ -872,7 +911,7 @@
     "title": "다이나핏 태백 트레일",
     "period": "2024.04 – 2024.09",
     "scale": "참가자 2,100명",
-    "rnr": "VENUE 운영 실무 · 이커머스 운영 실무",
+    "rnr": "VENUE 운영 실무 · 참가 접수 플랫폼 운영 실무",
     "resultLabel": "참가자 2,100명 · 스태프 100명",
     "video": "rirZ1C8tekE",
     "localVideo": "videos/dynafit-taebaek-2024.mp4"
@@ -1147,65 +1186,6 @@ document.getElementById("btn-phone").addEventListener("click",async()=>{
     document.execCommand("copy");t.remove();
   }
   showToast("복사되었습니다");
-});
-
-/* ── 관리자 모드 (숨김) ──────────────────────────────────────
-   진입: 좌상단 이름(WONJAE CHOI)을 1.5초 안에 5번 연속 클릭
-   기능: 프로젝트 화면·문제와 해결책 화면의 텍스트를 바로 수정 → HTML 다운로드 */
-let brandClicks=[];
-document.getElementById("brand").addEventListener("click",()=>{
-  const now=performance.now();
-  brandClicks=brandClicks.filter(t=>now-t<1500);
-  brandClicks.push(now);
-  if(brandClicks.length>=5){ brandClicks=[]; toggleAdmin(); }
-});
-function toggleAdmin(force){
-  const on=(force!==undefined)?force:!document.body.classList.contains("admin");
-  document.body.classList.toggle("admin",on);
-  document.querySelectorAll("[data-edit]").forEach(el=>{
-    if(on) el.setAttribute("contenteditable","true");
-    else el.removeAttribute("contenteditable");
-  });
-  showToast(on?"관리자 모드 — 점선 표시된 텍스트를 클릭해 수정하세요":"관리자 모드 종료");
-}
-document.getElementById("btn-admin-off").addEventListener("click",()=>toggleAdmin(false));
-/* 수정 내용을 현재 프로젝트 데이터에 반영 */
-document.addEventListener("focusout",e=>{
-  if(!document.body.classList.contains("admin"))return;
-  const el=e.target&&e.target.closest?e.target.closest("[data-edit]"):null;
-  if(!el)return;
-  const f=el.getAttribute("data-edit"), p=PROJECTS[current];
-  if(f==="problem"||f==="solution"||f==="result") p[f]=el.innerHTML.replace(/ /g," ");
-  else p[f]=el.textContent.replace(/ /g," ").trim();
-});
-/* 수정 반영된 HTML 다운로드 */
-document.getElementById("btn-dl").addEventListener("click",()=>{
-  /* 1. 데이터 블록에 현재 상태 기록 */
-  document.getElementById("projects-data").textContent="\n"+JSON.stringify(PROJECTS,null,2)+"\n";
-  /* 2. 문서 복제 후 런타임 흔적 제거 */
-  const clone=document.documentElement.cloneNode(true);
-  const q=s=>clone.querySelectorAll(s);
-  q('script[src*="iframe_api"]').forEach(n=>n.remove());
-  q("#bg-fallback").forEach(n=>n.remove());
-  const vl=clone.querySelector("#video-layer");
-  if(vl){ vl.removeAttribute("class"); vl.removeAttribute("style");
-    vl.innerHTML='\n  <div id="yt-holder"></div>\n  <video id="bg-local" muted loop playsinline autoplay></video>\n'; }
-  const it=clone.querySelector("#intro");
-  if(it){ it.removeAttribute("style"); it.classList.remove("done"); }
-  const bd=clone.querySelector("body");
-  if(bd){ bd.classList.remove("admin","focus-mode"); }
-  q(".modal.open").forEach(n=>n.classList.remove("open"));
-  q("[contenteditable]").forEach(n=>n.removeAttribute("contenteditable"));
-  const ph=clone.querySelector("#phone-reveal"); if(ph) ph.classList.remove("show");
-  const ts=clone.querySelector("#toast"); if(ts){ts.classList.remove("show");ts.textContent="복사되었습니다";}
-  const iv=clone.querySelector("#project-info"); if(iv) iv.classList.remove("switching");
-  /* 3. 저장 */
-  const html="<!DOCTYPE html>\n"+clone.outerHTML;
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob); a.download="index.html"; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-  showToast("index.html 다운로드 — 저장소에 덮어쓰면 반영됩니다");
 });
 
 /* 오토 티저: tease 필드가 있는 프로젝트에서 진입 몇 초 후 문제 후킹 카드 슬라이드 인 (프로젝트당 1회) */
